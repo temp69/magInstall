@@ -46,7 +46,7 @@ function show_magnet_banner() {
 	echo "$FGBG_NORMAL   email: temp@magnetwork.io"
 }
 
-# Check if magnet wallet is running
+# Check if wallet is running
 function check_process() {
 	local check_command=$(ps ax | grep -v grep | grep $WALLET_DAEMON | wc -l)
 	if [[ $check_command -eq 0 ]]; then
@@ -56,7 +56,8 @@ function check_process() {
 	fi
 }
 
-# Parse JSON
+# Parse JSON eg.: getinfo and get value for key
+# parameters $1 = json string / $2 = key
 function parse_json() {
 	local json="$1";
 	local key="$2";
@@ -65,6 +66,7 @@ function parse_json() {
 }
 
 # Get blockheight from explorer
+# curl with timeout
 function getBlockCountFromExplorer() {
 	local blockCount=0;
 	local url="http://209.250.248.159:3001/api/getblockcount";
@@ -81,13 +83,65 @@ function magnet_status() {
 	height=$(tput lines)
 	if [[ $(check_process) -eq 1 ]]; then
 		local current_block=$(parse_json "$($WALLET_DAEMON getinfo)" "blocks")
-		result=$result$FG_GREEN"running... block: $current_block"$FGBG_NORMAL;
+		result=$result$FONT_BOLD$FG_GREEN"running... block: $current_block"$FGBG_NORMAL;
 	else
-		result=$result$FG_RED"not running"$FGBG_NORMAL;
+		result=$result$FONT_BOLD$FG_RED"not running"$FGBG_NORMAL;
 	fi
 	#tput cup $((height - 2)) 0
 	echo "   $result"
 }
+
+# Checks distribution, returns 1 if we good and has global variables filled with info.
+function check_distribution() {
+	# check for distro
+	if [[ -r /etc/os-release ]]; then
+		. /etc/os-release
+		if [[ "${NAME,,}" != "ubuntu" ]] ; then
+			echo "$NAME is not supported!";
+			return 0;
+		fi
+		if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "17.04" ]] && \
+		   [[ "${VERSION_ID}" != "17.10" ]] && [[ "${VERSION_ID}" != "18.04" ]]; then
+			echo "$NAME $VERSION_ID is not supported!";
+			return 0;
+		else
+			echo "$FG_GREEN$NAME $VERSION_ID found..";
+		fi
+		return 1;
+	fi
+}
+
+# Updates the ubunutu system
+function update_ubuntusystem() {
+	sudo apt-get -qqy update >/dev/null
+        sudo apt-get -qqy upgrade >/dev/null
+	echo " Done!";
+}
+
+# Installs needed libraries on ubunutu system
+function install_libraries_ubunutu() {
+	# Common packages
+	sudo apt-get -qqy install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
+	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev
+	sudo add-apt-repository -yu ppa:bitcoin/bitcoin
+	sudo apt-get -qqy install libdb4.8-dev libdb4.8++-dev
+
+	# Ubuntu 18.04 needs libssl 1.0.xx installed
+	echo "$VERSION_ID";
+	if [[ "${VERSION_ID}" == "18.04" ]] ; then
+		sudo apt-get install libssl1.0-dev
+	fi
+}
+
+# Yes its an infinity loop
+function infinity_loop() {
+        while true;
+        do
+                echo -n .;
+                sleep 1;
+        done
+}
+
 ###################################################################
 
 ################### MAIN ENTRY POINT ##############################
@@ -103,7 +157,7 @@ while [[ $REPLY != 0 ]]; do
 	cat <<- _EOF_
 
 	1. INSTALL MAGNET WALLET
-	2. XXXXXXXXXXXXXXXXX
+	2. UPDATE SYSTEM
 	3. XXXXXXXXXXXXXXXXX
 	8. EXPLORER BLOCKS
 	9. MAGNET GETINFO
@@ -120,19 +174,19 @@ while [[ $REPLY != 0 ]]; do
 
 	# Act on selection
 	case $selection in
-	1)	echo $CURRENT_PATH
-		echo $WALLET_DOWNLOAD_URL
-		echo $WALLET_DATA_DIR
-		;;
-	2)	df -h
-		;;
-	3)	if [[ $(id -u) -eq 0 ]]; then
-			echo "Home Space Utilization (All Users)"
-			du -sh /home/* 2> /dev/null
-		else
-			echo "Home Space Utilization ($USER)"
-			du -s $HOME/* 2> /dev/null | sort -nr
+	1)	check_distribution;
+		exit_status=$?
+		if [[ "$exit_status" -eq 1 ]]; then
+			echo "continoue";
 		fi
+		;;
+	2)	echo -n "Updating system"
+		infinity_loop &
+		PID=$!
+		update_ubuntusystem;
+		kill $PID; trap 'kill $PID' SIGTERM
+		;;
+	3)	echo "(3) Comming soon.."
 		;;
 	8)	explorer_blocks=$(getBlockCountFromExplorer);
 		if [[ $explorer_blocks -gt 0 ]]; then
