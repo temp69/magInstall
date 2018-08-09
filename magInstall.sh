@@ -105,7 +105,7 @@ function check_distribution() {
 			echo "$NAME $VERSION_ID is not supported!";
 			return 0;
 		else
-			echo -n "$FG_GREEN$NAME $VERSION_ID found..";
+			echo "$FG_GREEN$NAME $VERSION_ID found..";
 		fi
 		return 1;
 	fi
@@ -181,7 +181,7 @@ while [[ $REPLY != 0 ]]; do
 			echo "INSTALLING";
 		fi
 		;;
-	2)	echo -n "Updating system"
+	2)	echo "Updating system"
 		#infinity_loop &
 		#PID=$!
 		# --- do something here ---
