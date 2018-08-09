@@ -77,7 +77,7 @@ function getBlockCountFromExplorer() {
 # Reports status of magnet wallet
 function magnet_status() {
 	local width height result
-	local result="MAGNET STATUS: ";
+	local result="MAGNET WALLET: ";
 
 	width=$(tput cols)
 	height=$(tput lines)
@@ -105,7 +105,7 @@ function check_distribution() {
 			echo "$NAME $VERSION_ID is not supported!";
 			return 0;
 		else
-			echo "$FG_GREEN$NAME $VERSION_ID found..";
+			echo -n "$FG_GREEN$NAME $VERSION_ID found..";
 		fi
 		return 1;
 	fi
@@ -121,15 +121,16 @@ function update_ubuntusystem() {
 # Installs needed libraries on ubunutu system
 function install_libraries_ubunutu() {
 	# Common packages
-	sudo apt-get -qqy install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
-	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev curl git unzip
+	sudo apt-get -yq install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
+	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev curl git unzip pwgen
 	sudo add-apt-repository -yu ppa:bitcoin/bitcoin
-	sudo apt-get -qqy install libdb4.8-dev libdb4.8++-dev
+	sudo apt-get -yq install libdb4.8-dev libdb4.8++-dev
 
 	# Ubuntu 18.04 needs libssl 1.0.xx installed
 	echo "$VERSION_ID";
 	if [[ "${VERSION_ID}" == "18.04" ]] ; then
-		sudo apt-get install libssl1.0-dev
+		sudo apt-get -yq install libssl1.0-dev
+		sudo apt-mark hold libssl1.0-dev
 	fi
 }
 
@@ -177,15 +178,20 @@ while [[ $REPLY != 0 ]]; do
 	1)	check_distribution;
 		exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
-			echo "continoue";
+			echo "INSTALLING";
 		fi
 		;;
 	2)	echo -n "Updating system"
 		#infinity_loop &
 		#PID=$!
-		update_ubuntusystem;
-		install_libraries_ubunutu;
+		# --- do something here ---
 		#kill $PID; trap 'kill $PID' SIGTERM
+		check_distribution;
+		exit_status=$?
+		if [[ "$exit_status" -eq 1 ]]; then
+                        update_ubuntusystem;
+			install_libraries_ubunutu;
+                fi
 		;;
 	3)	echo "(3) Comming soon.."
 		;;
