@@ -22,8 +22,8 @@ declare -r WALLET_DOWNLOAD_DIR="$HOME/magnet"
 declare -r WALLET_DAEMON="magnetd"
 declare -r WALLET_INSTALL_DIR="/usr/local/bin"
 declare -r WALLET_DATA_DIR="$HOME/.magnet"
-declare -r WALLET_DOWNLOAD_FILE="magnet-qt-LINUX.tar.gz"
-declare -r WALLET_DOWNLOAD_URL="https://magnetwork.io/Wallets/$WALLET_DOWNLOAD_FILE"
+declare -r WALLET_DOWNLOAD_FILE="magnet_wallets.tar.gz"
+declare -r WALLET_DOWNLOAD_URL="https://github.com/temp69/magInstall/releases/download/1/$WALLET_DOWNLOAD_FILE"
 declare -r WALLET_BOOTSTRAP_FILE="bootstrap.zip"
 declare -r WALLET_BOOTSTRAP_URL="https://magnetwork.io/Wallets/$WALLET_BOOTSTRAP_FILE"
 ###################################################################
@@ -71,7 +71,7 @@ function getBlockCountFromExplorer() {
 	local blockCount=0;
 	local url="http://209.250.248.159:3001/api/getblockcount";
 	blockCount=$(curl -s --connect-timeout 2 "$url")
-        echo $blockCount;
+	echo $blockCount;
 }
 
 # Reports status of magnet wallet
@@ -92,6 +92,7 @@ function magnet_status() {
 }
 
 # Checks distribution, returns 1 if we good and has global variables filled with info.
+# Allowed: Ubunutu: 16.04 / 17.04 / 17.10 / 18.04
 function check_distribution() {
 	# check for distro
 	if [[ -r /etc/os-release ]]; then
@@ -114,7 +115,8 @@ function check_distribution() {
 # Updates the ubunutu system
 function update_ubuntusystem() {
 	sudo apt-get -y update
-        sudo apt-get -y upgrade
+	#sudo apt-get -y upgrade
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 	echo " Done!";
 }
 
@@ -123,6 +125,7 @@ function install_libraries_ubunutu() {
 	# Common packages
 	sudo apt-get -yq install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
 	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev curl git unzip pwgen
+	#sudo apt-get -yq install qtbase5-dev
 	sudo add-apt-repository -yu ppa:bitcoin/bitcoin
 	sudo apt-get -yq install libdb4.8-dev libdb4.8++-dev
 
@@ -131,6 +134,21 @@ function install_libraries_ubunutu() {
 	if [[ "${VERSION_ID}" == "18.04" ]] ; then
 		sudo apt-get -yq install libssl1.0-dev
 		sudo apt-mark hold libssl1.0-dev
+	fi
+}
+
+function prepare_swap() {
+	if free | awk '/^Swap:/ {exit !$2}'; then
+		echo "Swap exists"
+	else
+		dd if=/dev/zero of=/swapfile count=2048 bs=1M
+		chmod 600 /swapfile
+		mkswap /swapfile
+		swapon /swapfile
+		echo "/swapfile none swap sw 0 0" >> /etc/fstab
+		echo 'vm.swappiness=10' | tee -a /etc/sysctl.conf
+		echo 'vm.vfs_cache_pressure=50' | tee -a /etc/sysctl.conf
+		echo "Swap with 2GB created"
 	fi
 }
 
@@ -159,7 +177,7 @@ while [[ $REPLY != 0 ]]; do
 
 	1. INSTALL MAGNET WALLET
 	2. UPDATE SYSTEM / INSTALL PACKAGES
-	3. XXXXXXXXXXXXXXXXX
+	3. START|STOP MAGNET WALLET
 	8. EXPLORER BLOCKS
 	9. MAGNET GETINFO
 	0. Quit
@@ -179,6 +197,7 @@ while [[ $REPLY != 0 ]]; do
 		exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
 			echo "INSTALLING";
+			prepare_swap;
 		fi
 		;;
 	2)	echo "Updating system"
@@ -193,7 +212,21 @@ while [[ $REPLY != 0 ]]; do
 			install_libraries_ubunutu;
                 fi
 		;;
-	3)	echo "(3) Comming soon.."
+	3)	if [[ -r "$WALLET_INSTALL_DIR/$WALLET_DAEMON" ]]; then
+                        if [[ $(check_process) -eq 1 ]]; then
+                                echo -n ${FONT_BOLD}${FG_RED};
+                                $WALLET_DAEMON stop;
+                                sleep 1;
+				echo -n ${FG_WHITE};
+                        else
+                                echo -n ${FONT_BOLD}${FG_GREEN};
+                                $WALLET_DAEMON;
+                                sleep 1;
+				echo -n ${FG_WHITE};
+                        fi
+                else
+                        echo "Could not locate $FG_RED$FONT_BOLD$WALLET_DAEMON$FGBG_NORMAL at $FG_RED$FONT_BOLD$WALLET_INSTALL_DIR$FGBG_NORMAL";
+                fi
 		;;
 	8)	explorer_blocks=$(getBlockCountFromExplorer);
 		if [[ $explorer_blocks -gt 0 ]]; then
@@ -204,9 +237,13 @@ while [[ $REPLY != 0 ]]; do
 		;;
 	9)	if [[ $(check_process) -eq 1 ]]; then
 			mag_status_result=$($WALLET_DAEMON getinfo);
+			echo -n ${FONT_BOLD}${FG_GREEN};
 			echo "$mag_status_result";
+			echo -n ${FG_WHITE};
 		else
+			echo -n ${FONT_BOLD}${FG_RED};
 			echo "MAGNET daemon not running...."
+			echo -n ${FG_WHITE};
 		fi
 		;;
 	0)	break
