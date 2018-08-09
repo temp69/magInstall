@@ -113,8 +113,8 @@ function check_distribution() {
 
 # Updates the ubunutu system
 function update_ubuntusystem() {
-	sudo apt-get -qqy update >/dev/null
-        sudo apt-get -qqy upgrade >/dev/null
+	sudo apt-get -y update
+        sudo apt-get -y upgrade
 	echo " Done!";
 }
 
@@ -122,7 +122,7 @@ function update_ubuntusystem() {
 function install_libraries_ubunutu() {
 	# Common packages
 	sudo apt-get -qqy install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
-	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev
+	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev curl git unzip
 	sudo add-apt-repository -yu ppa:bitcoin/bitcoin
 	sudo apt-get -qqy install libdb4.8-dev libdb4.8++-dev
 
@@ -157,7 +157,7 @@ while [[ $REPLY != 0 ]]; do
 	cat <<- _EOF_
 
 	1. INSTALL MAGNET WALLET
-	2. UPDATE SYSTEM
+	2. UPDATE SYSTEM / INSTALL PACKAGES
 	3. XXXXXXXXXXXXXXXXX
 	8. EXPLORER BLOCKS
 	9. MAGNET GETINFO
@@ -181,10 +181,11 @@ while [[ $REPLY != 0 ]]; do
 		fi
 		;;
 	2)	echo -n "Updating system"
-		infinity_loop &
-		PID=$!
+		#infinity_loop &
+		#PID=$!
 		update_ubuntusystem;
-		kill $PID; trap 'kill $PID' SIGTERM
+		install_libraries_ubunutu;
+		#kill $PID; trap 'kill $PID' SIGTERM
 		;;
 	3)	echo "(3) Comming soon.."
 		;;
