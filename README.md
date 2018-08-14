@@ -12,7 +12,7 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 
 ### Move into the directory and execute the script
 `cd magInstall`\
-`./magInstall`
+`./magInstall.sh`
 
 ![magnet script](https://user-images.githubusercontent.com/36497576/44104149-6122f798-9fee-11e8-9035-cd85b818dc43.png)
 
