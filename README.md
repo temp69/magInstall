@@ -2,10 +2,10 @@
 
 ## magnet install/update/config script
 
-A menu driven bash script to handle the magnet wallet.
+A menu driven bash script to handle the magnet wallet on the VPS.
 
 ### Install git if needed
-`apt-get install git`
+`sudo apt-get install git`
 
 ### Download the install script
 `git clone https://github.com/temp69/magInstall`
@@ -18,31 +18,31 @@ A menu driven bash script to handle the magnet wallet.
 
 ## INFO
 
-- (1) INSTALL|UPDATE|RESYNC MAGNET
+- **INSTALL|UPDATE|RESYNC MAGNET**
 
 This will install / update the magnet wallet or resync your local blockchain.\
 On resync it keeps the necessary files (magnet.conf | masternode.conf | wallet.dat)
 
-- (2) UPDATE SYSTEM & INSTALL PACKAGES
+- **UPDATE SYSTEM & INSTALL PACKAGES**
 
 Keeps your system up-to-date and installs the required packages to start the wallet.\
 Hint: Use this first on a fresh VPS
 
-- (3) START|STOP MAGNET WALLET
+- **START|STOP MAGNET WALLET**
 
 You can start and stop your magnet wallet.\
 Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!\
 Hint: Use **<ENTER>** twice to refresh the status
 
-- (9) STATUS INFORMATION
+- **STATUS INFORMATION**
 
 Will give you information of your wallet and the explorers, to check how the sync is going.
 
-- (q) Quit
+- **Quit**
 
 Ends the script
 
 ## TODO
 
-- Masternode configuration
-
+- MASTERNODE CONFIGURATION
+- REFACTOR SOME FUNCTIONS
