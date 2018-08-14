@@ -2,6 +2,8 @@
 
 ## magnet install/update/config script
 
+A menu driven bash script to handle the magnet wallet.
+
 ### Install git if needed
 `apt-get install git`
 
@@ -29,7 +31,8 @@ Hint: Use this first on a fresh VPS
 - (3) START|STOP MAGNET WALLET
 
 You can start and stop your magnet wallet.\
-Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!
+Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!\
+Hint: Use **<ENTER>** twice to refresh the status
 
 - (9) STATUS INFORMATION
 
