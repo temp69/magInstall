@@ -26,13 +26,12 @@ On resync it keeps the necessary files (magnet.conf | masternode.conf | wallet.d
 - **UPDATE SYSTEM & INSTALL PACKAGES**
 
 Keeps your system up-to-date and installs the required packages to start the wallet.\
-Hint: Use this first on a fresh VPS
+Use this first on a fresh VPS
 
 - **START|STOP MAGNET WALLET**
 
 You can start and stop your magnet wallet.\
-Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!\
-Hint: Use **<ENTER>** twice to refresh the status
+Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!
 
 - **STATUS INFORMATION**
 
@@ -41,6 +40,8 @@ Will give you information of your wallet and the explorers, to check how the syn
 - **Quit**
 
 Ends the script
+
+Hint: Use **ENTER** twice to refresh the status information!
 
 ## TODO
 
