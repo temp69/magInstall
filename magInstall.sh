@@ -361,6 +361,7 @@ while [[ $REPLY != 0 ]]; do
                                 echo "INSTALLING";
                                 prepare_swap;
                                 download_wallet_files;
+				prepare_datadir;
                         fi
 		fi
 		;;
