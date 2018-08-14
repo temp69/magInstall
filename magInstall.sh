@@ -26,7 +26,8 @@ declare -r WALLET_DOWNLOAD_FILE="magnet_wallets.tar.gz"
 declare -r WALLET_DOWNLOAD_URL="https://github.com/temp69/magInstall/releases/download/1/$WALLET_DOWNLOAD_FILE"
 declare -r WALLET_BOOTSTRAP_FILE="bootstrap.zip"
 declare -r WALLET_BOOTSTRAP_URL="https://magnetwork.io/Wallets/$WALLET_BOOTSTRAP_FILE"
-declare -r EXPLORER_URL="http://35.202.4.153:3001"
+declare -r EXPLORER_URL1="http://35.202.4.153:3001"
+declare -r EXPLORER_URL2="http://209.250.248.159:3001"
 ###################################################################
 
 #################  HELPER FUNCTIONS ###############################
@@ -70,7 +71,8 @@ function parse_json() {
 # curl with timeout
 function getBlockCountFromExplorer() {
 	local blockCount=0;
-	local url="$EXPLORER_URL/api/getblockcount";
+	#local url="$EXPLORER_URL/api/getblockcount";
+	local url=$1"/api/getblockcount";
 	blockCount=$(curl -s --connect-timeout 2 "$url")
 	echo $blockCount;
 }
@@ -124,7 +126,7 @@ function update_ubuntusystem() {
 # Installs needed libraries on ubunutu system
 function install_libraries_ubunutu() {
 	# Common packages
-	sudo apt-get -yq install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev \
+	sudo apt-get -yq install build-essential libtool automake autotools-dev autoconf pkg-config libssl-dev wget tar \
 	libgmp3-dev libevent-dev bsdmainutils libboost-all-dev software-properties-common libminiupnpc-dev curl git unzip pwgen
 	#sudo apt-get -yq install qtbase5-dev
 	sudo add-apt-repository -yu ppa:bitcoin/bitcoin
@@ -142,16 +144,76 @@ function prepare_swap() {
 	if free | awk '/^Swap:/ {exit !$2}'; then
 		echo "Swap exists"
 	else
-		dd if=/dev/zero of=/swapfile count=2048 bs=1M
-		chmod 600 /swapfile
-		mkswap /swapfile
-		swapon /swapfile
-		echo "/swapfile none swap sw 0 0" >> /etc/fstab
-		echo 'vm.swappiness=10' | tee -a /etc/sysctl.conf
-		echo 'vm.vfs_cache_pressure=50' | tee -a /etc/sysctl.conf
+		sudo dd if=/dev/zero of=/swapfile count=2048 bs=1M
+		sudo chmod 600 /swapfile
+		sudo mkswap /swapfile
+		sudo swapon /swapfile
+		sudo echo "/swapfile none swap sw 0 0" >> /etc/fstab
+		sudo echo 'vm.swappiness=10' | tee -a /etc/sysctl.conf
+		sudo echo 'vm.vfs_cache_pressure=50' | tee -a /etc/sysctl.conf
 		echo "Swap with 2GB created"
 	fi
 }
+
+# call with a prompt string or use a default
+function get_confirmation() {
+        read -r -p "${1:-Are you sure? [y/N]} " response
+        case "$response" in
+                [yY])
+                        true
+                        ;;
+                *)
+                        false
+                        ;;
+        esac
+}
+
+# Delete everything from the wallet directory and redownload/install wallet.
+function update_wallets() {
+        # if directory exists we delete it first
+        if [ -d "$WALLET_DOWNLOAD_DIR" ]; then
+                rm -rfv $WALLET_DOWNLOAD_DIR;
+        fi
+        mkdir -p $WALLET_DOWNLOAD_DIR;
+        cd $WALLET_DOWNLOAD_DIR;
+        wget $WALLET_DOWNLOAD_URL;
+        tar -xvzf $WALLET_DOWNLOAD_FILE;
+        local dist_wallet="$HOME/magnet/magnet_wallets/"
+        case "$VERSION_ID" in
+                "16.04")        dist_wallet=$dist_wallet"ubuntu_16_04/$WALLET_DAEMON";
+                                ;;
+                "17.04")        dist_wallet=$dist_wallet"ubuntu_17_04/$WALLET_DAEMON";
+                                ;;
+                "17.10")        dist_wallet=$dist_wallet"ubuntu_17_10/$WALLET_DAEMON";
+                                ;;
+                "18.04")        dist_wallet=$dist_wallet"ubuntu_18_04/$WALLET_DAEMON";
+                                ;;
+                *)              echo "$VERSION_ID not found...";
+                                ;;
+        esac
+        sudo cp $dist_wallet $WALLET_INSTALL_DIR
+        if [ $? -eq 0 ]; then
+                echo ${FONT_BOLD}${FG_WHITE};
+                echo "Copied $FG_GREEN$WALLET_DAEMON$FG_WHITE from $FG_GREEN$dist_wallet$FG_WHITE to $FG_GREEN$WALLET_INSTALL_DIR";
+                echo ${FG_WHITE};
+        fi
+}
+
+# Initial or updated download the wallets
+function download_wallet_files() {
+        if [[ -r "$WALLET_DOWNLOAD_DIR/$WALLET_DOWNLOAD_FILE" ]]; then
+                echo $FONT_BOLD"The wallet download directory already exists $FG_RED$WALLET_DOWNLOAD_DIR$FG_WHITE";
+                get_confirmation "Do you want to reinstall/update the wallet!? [y/n]"
+                if [ $? -eq 0 ]; then
+                        echo ${FGBG_NORMAL}${FG_GREEN};
+                        update_wallets;
+                fi
+        else
+                echo ${FGBG_NORMAL}${FG_GREEN};
+                update_wallets;
+        fi
+}
+
 
 # Yes its an infinity loop
 function infinity_loop() {
@@ -168,6 +230,11 @@ function infinity_loop() {
 # Save screen
 tput smcup
 
+#if [[ $EUID -ne 0 ]]; then
+#   echo "This script must be run as root" 1>&2
+#   exit 1
+#fi
+
 # Display menu until selection == 0
 while [[ $REPLY != 0 ]]; do
 	clear
@@ -176,14 +243,14 @@ while [[ $REPLY != 0 ]]; do
 	echo -n ${FONT_BOLD}${FG_WHITE}
 	cat <<- _EOF_
 
-	1. INSTALL MAGNET WALLET
-	2. UPDATE SYSTEM / INSTALL PACKAGES
+	1. INSTALL|UPDATE MAGNET WALLET
+	2. UPDATE SYSTEM & INSTALL PACKAGES
 	3. START|STOP MAGNET WALLET
 	9. STATUS INFORMATION
 	0. Quit
 
 	_EOF_
-	read -p "Enter selection [0-3] > " selection
+	read -p "Enter selection [0-9] > " selection
 
 	# Clear area beneath menu
 	tput cup 12 0
@@ -196,8 +263,15 @@ while [[ $REPLY != 0 ]]; do
 	1)	check_distribution;
 		exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
-			echo "INSTALLING";
-			prepare_swap;
+			if [[ $(check_process) -eq 1 ]]; then 
+                                echo -n ${FONT_BOLD}${FG_RED};
+                                echo "MAGNET daemon is running, stop it before updating...."
+                                echo -n ${FG_WHITE};
+                        else
+                                echo "INSTALLING";
+                                prepare_swap;
+                                download_wallet_files;
+                        fi
 		fi
 		;;
 	2)	echo "Updating system"
@@ -239,17 +313,34 @@ while [[ $REPLY != 0 ]]; do
 			echo "MAGNET daemon not running...."
 			echo -n ${FG_WHITE};
 		fi
-		explorer_blocks=$(getBlockCountFromExplorer);
+		explorer_blocks=$(getBlockCountFromExplorer $EXPLORER_URL1);
                 if [[ $explorer_blocks -gt 0 ]]; then
 			echo "";
-                        echo "Explorer block height: $FG_GREEN$explorer_blocks$FGBG_NORMAL";
+                        echo $FG_WHITE"Explorer1 block height: $FG_GREEN$explorer_blocks";
                 else
-                        echo "Could not connect to explorer API!"
+                        echo "Could not connect to $FG_RED$EXPLORER_URL1$FG_WHITE API!"
                 fi
-
+                explorer_blocks=$(getBlockCountFromExplorer $EXPLORER_URL2);
+                if [[ $explorer_blocks -gt 0 ]]; then
+                        echo $FG_WHITE"Explorer2 block height: $FG_GREEN$explorer_blocks";
+                else
+                        echo "Could not connect to $FG_RED$EXPLORER_URL2$FG_WHITE API!"
+                fi
+		echo ${FG_WHITE};
 		;;
 	0)	break
 		;;
+        v)      echo "CURRENT_PATH: "$CURRENT_PATH;
+                echo "WALLET_DOWNLOAD_DIR: "$WALLET_DOWNLOAD_DIR
+                echo "WALLET_DAEMON: "$WALLET_DAEMON
+                echo "WALLET_INSTALL_DIR: "$WALLET_INSTALL_DIR
+                echo "WALLET_DOWNLOAD_FILE: "$WALLET_DOWNLOAD_FILE
+                echo "WALLET_DOWNLOAD_URL: "$WALLET_DOWNLOAD_URL
+                echo "WALLET_BOOTSTRAP_FILE: "$WALLET_BOOTSTRAP_FILE
+                echo "WALLET_BOOTSTRAP_URL: "$WALLET_BOOTSTRAP_URL
+                echo "EXPLORER_URL1: "$EXPLORER_URL1
+		echo "EXPLORER_URL2: "$EXPLORER_URL2
+                ;;
 	*)	echo "Invalid entry."
 		;;
 	esac
