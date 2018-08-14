@@ -214,6 +214,96 @@ function download_wallet_files() {
         fi
 }
 
+function fresh_magnet_conf() {
+	mkdir -p $WALLET_DATA_DIR
+	cd $WALLET_DATA_DIR
+	wget $WALLET_BOOTSTRAP_URL
+	unzip $WALLET_BOOTSTRAP_FILE
+	RANDOM_RPC_USER=$(pwgen 8 1)
+	RANDOM_RPC_PASS=$(pwgen 20 1)
+	touch $WALLET_DATA_DIR/magnet.conf
+	cat > $WALLET_DATA_DIR/magnet.conf <<- EOL
+	rpcallowip=127.0.0.1
+	rpcport=17179
+	rpcuser=$RANDOM_RPC_USER
+	rpcpassword=$RANDOM_RPC_PASS
+	server=1
+	daemon=1
+	listen=1
+	staking=0
+	port=17177
+	debug=all
+	addnode=45.76.81.227:17177
+	addnode=104.207.151.96:17177
+	addnode=45.32.140.188:17177
+	addnode=108.61.209.211:17177
+	addnode=107.191.62.63:17177
+	addnode=45.32.48.202:17177
+	addnode=108.61.176.156:17177
+	addnode=45.77.7.202:17177
+	addnode=45.76.130.131:17177
+	addnode=45.77.138.103:17177
+	addnode=104.238.188.10:17177
+	addnode=45.77.232.192:17177
+	addnode=209.250.239.217:17177
+	addnode=209.222.30.95:17177
+	addnode=104.238.165.132:17177
+	addnode=108.61.208.135:17177
+	addnode=144.202.71.114:17177
+	addnode=45.63.42.106:17177
+	addnode=209.250.242.7:17177
+	addnode=207.246.124.100:17177
+	addnode=45.76.83.24:17177
+	addnode=207.246.117.153:17177
+	addnode=45.77.163.102:17177
+	addnode=45.63.111.17:17177
+	addnode=104.238.137.11:17177
+	addnode=140.82.35.120:17177
+	addnode=104.156.231.73:17177
+	addnode=45.32.132.121:17177
+	addnode=45.32.132.201:17177
+	addnode=144.202.101.179:17177
+	addnode=144.202.90.252:17177
+	addnode=45.76.241.191:17177
+	addnode=144.202.91.240:17177
+	addnode=45.76.244.72:17177
+	addnode=144.202.81.254:17177
+	addnode=45.63.37.72:17177
+	addnode=104.238.153.185:17177
+	addnode=45.77.214.85:17177
+	addnode=45.77.208.101:17177
+	addnode=144.202.87.162:17177
+	addnode=217.163.23.170:17177
+	EOL
+}
+
+function resync_blockchain() {
+	echo ${FGBG_NORMAL}${FG_GREEN};
+	cd $WALLET_DATA_DIR
+	#rm -rfv !("magnet.conf"|"masternode.conf"|"wallet.dat")
+	find -maxdepth 1 ! -name magnet.conf ! -name masternode.conf ! -name wallet.dat ! -name backup ! -name . -exec rm -rv {} \;
+	wget $WALLET_BOOTSTRAP_URL
+	unzip $WALLET_BOOTSTRAP_FILE
+	echo ${FONT_BOLD}${FG_WHITE};
+	echo "All but those files were deleted:$FG_GREEN magnet.conf / masternode.conf / wallet.dat$FG_WHITE";
+	echo "Redownloaded the $FG_GREEN bootstrap file.!";
+}
+
+function prepare_datadir() {
+	# No datadirectory -> fresh installation needed
+	if [ ! -d "$WALLET_DATA_DIR" ]; then
+		echo ${FG_WHITE}"Fresh Installation";
+		echo ${FGBG_NORMAL}${FG_GREEN};
+		fresh_magnet_conf;
+		echo -n ${FONT_BOLD}${FG_WHITE}
+	else
+		echo ${FONT_BOLD}${FG_RED}"There is already a data-directory present"${FG_WHITE};
+		get_confirmation "Do you want to resync the blockchain? [y/n]"
+		if [ $? -eq 0 ]; then
+			resync_blockchain;
+		fi
+	fi
+}
 
 # Yes its an infinity loop
 function infinity_loop() {
@@ -243,7 +333,7 @@ while [[ $REPLY != 0 ]]; do
 	echo -n ${FONT_BOLD}${FG_WHITE}
 	cat <<- _EOF_
 
-	1. INSTALL|UPDATE MAGNET WALLET
+	1. INSTALL|UPDATE|RESYNC MAGNET
 	2. UPDATE SYSTEM & INSTALL PACKAGES
 	3. START|STOP MAGNET WALLET
 	9. STATUS INFORMATION
@@ -302,7 +392,6 @@ while [[ $REPLY != 0 ]]; do
                         echo "Could not locate $FG_RED$FONT_BOLD$WALLET_DAEMON$FGBG_NORMAL at $FG_RED$FONT_BOLD$WALLET_INSTALL_DIR$FGBG_NORMAL";
                 fi
 		;;
-	8)	;;
 	9)	if [[ $(check_process) -eq 1 ]]; then
 			mag_status_result=$($WALLET_DAEMON getinfo);
 			echo -n ${FONT_BOLD}${FG_GREEN};
