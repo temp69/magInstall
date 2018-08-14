@@ -16,7 +16,7 @@ declare -r FG_RED="$(tput setaf 1)"
 declare -r FGBG_NORMAL="$(tput sgr0)"
 declare -r FONT_BOLD="$(tput bold)"
 declare -r FONT_BLINK="$(tput blink)"
-# Wallet related
+# Coin related
 declare -r CURRENT_PATH="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 declare -r WALLET_DOWNLOAD_DIR="$HOME/magnet"
 declare -r WALLET_DAEMON="magnetd"
@@ -26,6 +26,7 @@ declare -r WALLET_DOWNLOAD_FILE="magnet_wallets.tar.gz"
 declare -r WALLET_DOWNLOAD_URL="https://github.com/temp69/magInstall/releases/download/1/$WALLET_DOWNLOAD_FILE"
 declare -r WALLET_BOOTSTRAP_FILE="bootstrap.zip"
 declare -r WALLET_BOOTSTRAP_URL="https://magnetwork.io/Wallets/$WALLET_BOOTSTRAP_FILE"
+declare -r EXPLORER_URL="http://35.202.4.153:3001"
 ###################################################################
 
 #################  HELPER FUNCTIONS ###############################
@@ -69,7 +70,7 @@ function parse_json() {
 # curl with timeout
 function getBlockCountFromExplorer() {
 	local blockCount=0;
-	local url="http://209.250.248.159:3001/api/getblockcount";
+	local url="$EXPLORER_URL/api/getblockcount";
 	blockCount=$(curl -s --connect-timeout 2 "$url")
 	echo $blockCount;
 }
@@ -178,8 +179,7 @@ while [[ $REPLY != 0 ]]; do
 	1. INSTALL MAGNET WALLET
 	2. UPDATE SYSTEM / INSTALL PACKAGES
 	3. START|STOP MAGNET WALLET
-	8. EXPLORER BLOCKS
-	9. MAGNET GETINFO
+	9. STATUS INFORMATION
 	0. Quit
 
 	_EOF_
@@ -228,13 +228,7 @@ while [[ $REPLY != 0 ]]; do
                         echo "Could not locate $FG_RED$FONT_BOLD$WALLET_DAEMON$FGBG_NORMAL at $FG_RED$FONT_BOLD$WALLET_INSTALL_DIR$FGBG_NORMAL";
                 fi
 		;;
-	8)	explorer_blocks=$(getBlockCountFromExplorer);
-		if [[ $explorer_blocks -gt 0 ]]; then
-			echo "Explorer block heigth: $FG_GREEN$explorer_blocks$FGBG_NORMAL";
-		else
-			echo "Could not connect to explorer API!"
-		fi
-		;;
+	8)	;;
 	9)	if [[ $(check_process) -eq 1 ]]; then
 			mag_status_result=$($WALLET_DAEMON getinfo);
 			echo -n ${FONT_BOLD}${FG_GREEN};
@@ -245,6 +239,14 @@ while [[ $REPLY != 0 ]]; do
 			echo "MAGNET daemon not running...."
 			echo -n ${FG_WHITE};
 		fi
+		explorer_blocks=$(getBlockCountFromExplorer);
+                if [[ $explorer_blocks -gt 0 ]]; then
+			echo "";
+                        echo "Explorer block height: $FG_GREEN$explorer_blocks$FGBG_NORMAL";
+                else
+                        echo "Could not connect to explorer API!"
+                fi
+
 		;;
 	0)	break
 		;;
