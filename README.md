@@ -33,7 +33,15 @@ Use this first on a fresh VPS
 You can start and stop your magnet wallet.\
 Info: When starting the wallet, it might not be able to connect to the wallet instantly and show error!
 
-- **STATUS INFORMATION**
+- **MASTERNODE CONFIG**
+
+Adds the necessary entries to the config file on your VPS
+
+- **MASTERNODE STATUS**
+
+Shows information about your masternode status on the VPS
+
+- **WALLET STATUS**
 
 Will give you information of your wallet and the explorers, to check how the sync is going.
 
@@ -45,5 +53,6 @@ Hint: Use **ENTER** twice to refresh the status information!
 
 ## TODO
 
-- MASTERNODE CONFIGURATION
+- MASTERNODE STATUS & DEBUG INFO
+- COMPATIBILITY WITH OLD SETUP INSTRUCTIONS
 - REFACTOR SOME FUNCTIONS

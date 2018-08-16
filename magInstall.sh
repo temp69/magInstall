@@ -20,14 +20,18 @@ declare -r FONT_BLINK="$(tput blink)"
 declare -r CURRENT_PATH="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 declare -r WALLET_DOWNLOAD_DIR="$HOME/magnet"
 declare -r WALLET_DAEMON="magnetd"
+declare -r WALLET_PORT=17177
 declare -r WALLET_INSTALL_DIR="/usr/local/bin"
 declare -r WALLET_DATA_DIR="$HOME/.magnet"
 declare -r WALLET_DOWNLOAD_FILE="magnet_wallets.tar.gz"
 declare -r WALLET_DOWNLOAD_URL="https://github.com/temp69/magInstall/releases/download/1/$WALLET_DOWNLOAD_FILE"
 declare -r WALLET_BOOTSTRAP_FILE="bootstrap.zip"
 declare -r WALLET_BOOTSTRAP_URL="https://magnetwork.io/Wallets/$WALLET_BOOTSTRAP_FILE"
+declare -r WALLET_CONFIG_FILE="magnet.conf"
+declare -r WALLET_MASTERNODE_FILE="masternode.conf"
 declare -r EXPLORER_URL1="http://35.202.4.153:3001"
 declare -r EXPLORER_URL2="http://209.250.248.159:3001"
+declare -r YIIMP_POOL_URL1="http://magnetpool.io"
 ###################################################################
 
 #################  HELPER FUNCTIONS ###############################
@@ -67,6 +71,17 @@ function parse_json() {
 	echo $result
 }
 
+# Get blockheight from YIIMP pool
+# curl with timeout
+function getBlockCountFromPool() {
+        local pool_info=0;
+        #local url="http://magnetpool.io/api/currencies";
+        local url=$1"/api/currencies";
+        pool_info=$(curl -s --connect-timeout 2 "$url");
+        local pblock_count=$(parse_json "$pool_info" "height");
+        echo $pblock_count;
+}
+
 # Get blockheight from explorer
 # curl with timeout
 function getBlockCountFromExplorer() {
@@ -79,19 +94,16 @@ function getBlockCountFromExplorer() {
 
 # Reports status of magnet wallet
 function magnet_status() {
-	local width height result
 	local result="MAGNET WALLET: ";
-
-	width=$(tput cols)
-	height=$(tput lines)
 	if [[ $(check_process) -eq 1 ]]; then
 		local current_block=$(parse_json "$($WALLET_DAEMON getinfo)" "blocks")
 		result=$result$FONT_BOLD$FG_GREEN"running... block: $current_block"$FGBG_NORMAL;
 	else
 		result=$result$FONT_BOLD$FG_RED"not running"$FGBG_NORMAL;
 	fi
-	#tput cup $((height - 2)) 0
 	echo "   $result"
+	#loop
+	#echo -ne "Current block: "`magnetd getinfo | grep blocks | awk '{print $3}' | cut -d ',' -f 1`'\r'
 }
 
 # Checks distribution, returns 1 if we good and has global variables filled with info.
@@ -139,7 +151,7 @@ function install_libraries_ubunutu() {
 		sudo apt-mark hold libssl1.0-dev
 	fi
 }
-
+# Creates a swap space
 function prepare_swap() {
 	if free | awk '/^Swap:/ {exit !$2}'; then
 		echo "Swap exists"
@@ -214,6 +226,7 @@ function download_wallet_files() {
         fi
 }
 
+# Create a fresh magnet.conf file in datadirectory
 function fresh_magnet_conf() {
 	mkdir -p $WALLET_DATA_DIR
 	cd $WALLET_DATA_DIR
@@ -233,6 +246,7 @@ function fresh_magnet_conf() {
 	staking=0
 	port=17177
 	debug=all
+	maxconnections=125
 	addnode=45.76.81.227:17177
 	addnode=104.207.151.96:17177
 	addnode=45.32.140.188:17177
@@ -277,6 +291,7 @@ function fresh_magnet_conf() {
 	EOL
 }
 
+# Resyncs the blockchain
 function resync_blockchain() {
 	echo ${FGBG_NORMAL}${FG_GREEN};
 	cd $WALLET_DATA_DIR
@@ -289,6 +304,7 @@ function resync_blockchain() {
 	echo "Redownloaded the $FG_GREEN bootstrap file.!";
 }
 
+# Initializes the datadirectory
 function prepare_datadir() {
 	# No datadirectory -> fresh installation needed
 	if [ ! -d "$WALLET_DATA_DIR" ]; then
@@ -302,6 +318,59 @@ function prepare_datadir() {
 		if [ $? -eq 0 ]; then
 			resync_blockchain;
 		fi
+	fi
+}
+
+function masternode_entries() {
+	#local NODEIP=$(curl -s4 api.ipify.org)
+	local NODEIP=$(curl -s4 ipinfo.io/ip)
+	local MNPRIVKEY="";
+	#while [ -z "${MNPRIVKEY// }" ] && [[ $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; do
+	while [[ ! $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; do
+		echo ${FG_GREEN}"Enter your masternode private key:"${FG_WHITE};
+		read MNPRIVKEY;
+		if [[ ! $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; then
+			echo ${FG_WHITE}"Key: "${FG_RED}$MNPRIVKEY${FG_WHITE}" is not valid!"
+		fi
+	done
+	local MNADDR=$NODEIP:$WALLET_PORT;
+	echo ${FGBG_NORMAL}${FG_GREEN};
+	echo "externalip="$NODEIP;
+	echo "masternode=1";
+	echo "masternodeaddr="$MNADDR;
+	echo "masternodeprivkey="$MNPRIVKEY;
+	echo ${FONT_BOLD}${FG_WHITE};
+	get_confirmation "Add those entries to ${FG_GREEN}magnet.conf${FG_WHITE}? [y/n]"
+	if [ $? -eq 0 ]; then
+		# Remove all masternode entries
+		sed -i '/masternode/d' $FILE;
+		sed -i '/externalip/d' $FILE;
+		# Add entries
+		cat >> $FILE <<- EOF
+		externalip=$NODEIP
+		masternode=1
+		masternodeaddr=$MNADDR
+		masternodeprivkey=$MNPRIVKEY
+		EOF
+		echo ${FONT_BOLD}${FG_GREEN};
+		echo "1) Restart this wallet now, so this configuration takes effect!"
+		echo "2) Configure your coldwallet's masternode.conf file and restart coldwallet"
+		echo "3) Unlock coldwallet and hit [Start]"${FG_WHITE}
+	fi
+}
+
+function config_masternode() {
+	local STRING="masternode=1";
+	local FILE=$WALLET_DATA_DIR"/"$WALLET_CONFIG_FILE;
+	if [ ! -z $(grep "$STRING" "$FILE") ]; then
+ 		# Masternode entries already found
+		get_confirmation "Masternode entries found, overwrite them? [y/n]"
+		if [ $? -eq 0 ]; then
+			masternode_entries;
+		fi
+	else
+		# Fresh masternode entries needed.
+		masternode_entries;
 	fi
 }
 
@@ -336,7 +405,10 @@ while [[ $REPLY != 0 ]]; do
 	1. INSTALL|UPDATE|RESYNC MAGNET
 	2. UPDATE SYSTEM & INSTALL PACKAGES
 	3. START|STOP MAGNET WALLET
-	9. STATUS INFORMATION
+	4. MASTERNODE CONFIG
+	--------------------
+	8. MASTERNODE STATUS
+	9. WALLET STATUS
 	0. Quit
 
 	_EOF_
@@ -375,6 +447,7 @@ while [[ $REPLY != 0 ]]; do
 		if [[ "$exit_status" -eq 1 ]]; then
                         update_ubuntusystem;
 			install_libraries_ubunutu;
+			echo -n ${FG_WHITE};
                 fi
 		;;
 	3)	if [[ -r "$WALLET_INSTALL_DIR/$WALLET_DAEMON" ]]; then
@@ -387,10 +460,44 @@ while [[ $REPLY != 0 ]]; do
                                 echo -n ${FONT_BOLD}${FG_GREEN};
                                 $WALLET_DAEMON;
                                 sleep 1;
+				until [[ $($WALLET_DAEMON getinfo 2>/dev/null | grep \"version\" | wc -l) -eq 1 ]]; do
+					echo -n .;
+					sleep 1;
+				done
 				echo -n ${FG_WHITE};
                         fi
                 else
                         echo "Could not locate $FG_RED$FONT_BOLD$WALLET_DAEMON$FGBG_NORMAL at $FG_RED$FONT_BOLD$WALLET_INSTALL_DIR$FGBG_NORMAL";
+			# TBD -> check if wallet is running regardless, from old setup instructions and ask if we should kill it with fire
+                fi
+		;;
+	4)	check_distribution;
+                exit_status=$?
+		if [[ "$exit_status" -eq 1 ]]; then
+			if [[ -r "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE" ]]; then
+				echo ${FONT_BOLD}${FG_GREEN};
+				echo "Its suggested to proceed only after your wallet's blockchain";
+				echo "is fully synchronized. You can check with option (9)";
+				echo -n ${FG_WHITE};
+				get_confirmation "Do you want to proceed? [y/n]"
+				if [ $? -eq 0 ]; then
+					config_masternode;
+				fi
+			else
+				echo ${FONT_BOLD}${FG_WHITE}"Could not locate $FG_RED$WALLET_DATA_DIR/$WALLET_CONFIG_FILE$FGBG_NORMAL, install the wallet first";
+			fi
+		fi
+		;;
+	8)	if [[ $(check_process) -eq 1 ]]; then
+                        mag_status_result=$($WALLET_DAEMON masternode status);
+			mag_status_result=$mag_status_result$'\n\n'$($WALLET_DAEMON masternode debug);
+                        echo -n ${FONT_BOLD}${FG_GREEN};
+                        echo "$mag_status_result";
+                        echo -n ${FG_WHITE};
+                else
+                        echo -n ${FONT_BOLD}${FG_RED};
+                        echo "Magnet wallet not running...."
+                        echo -n ${FG_WHITE};
                 fi
 		;;
 	9)	if [[ $(check_process) -eq 1 ]]; then
@@ -400,7 +507,7 @@ while [[ $REPLY != 0 ]]; do
 			echo -n ${FG_WHITE};
 		else
 			echo -n ${FONT_BOLD}${FG_RED};
-			echo "MAGNET daemon not running...."
+			echo "Magnet wallet not running...."
 			echo -n ${FG_WHITE};
 		fi
 		explorer_blocks=$(getBlockCountFromExplorer $EXPLORER_URL1);
@@ -416,6 +523,12 @@ while [[ $REPLY != 0 ]]; do
                 else
                         echo "Could not connect to $FG_RED$EXPLORER_URL2$FG_WHITE API!"
                 fi
+		pool_blocks=$(getBlockCountFromPool $YIIMP_POOL_URL1);
+		if [[ $pool_blocks -gt 0 ]]; then
+			echo $FG_WHITE"YIIMP pool block height: $FG_GREEN$pool_blocks";
+		else
+			echo "Could not connect to $FG_RED$YIIMP_POOL_URL1$FG_WHITE API!"
+		fi
 		echo ${FG_WHITE};
 		;;
 	0)	break
@@ -430,6 +543,7 @@ while [[ $REPLY != 0 ]]; do
                 echo "WALLET_BOOTSTRAP_URL: "$WALLET_BOOTSTRAP_URL
                 echo "EXPLORER_URL1: "$EXPLORER_URL1
 		echo "EXPLORER_URL2: "$EXPLORER_URL2
+		echo "YIIMP_POOL_URL1: "$YIIMP_POOL_URL1
                 ;;
 	*)	echo "Invalid entry."
 		;;
