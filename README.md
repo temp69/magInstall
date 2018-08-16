@@ -14,7 +14,7 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 `cd magInstall`\
 `./magInstall.sh`
 
-![magnet script](https://user-images.githubusercontent.com/36497576/44104149-6122f798-9fee-11e8-9035-cd85b818dc43.png)
+![magnet script](https://user-images.githubusercontent.com/36497576/44196590-a1d4fd00-a13c-11e8-92d8-307d7a668687.png)
 
 ## INFO
 
@@ -53,6 +53,5 @@ Hint: Use **ENTER** twice to refresh the status information!
 
 ## TODO
 
-- MASTERNODE STATUS & DEBUG INFO
 - COMPATIBILITY WITH OLD SETUP INSTRUCTIONS
 - REFACTOR SOME FUNCTIONS
