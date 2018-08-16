@@ -301,7 +301,7 @@ function resync_blockchain() {
 	unzip $WALLET_BOOTSTRAP_FILE
 	echo ${FONT_BOLD}${FG_WHITE};
 	echo "All but those files were deleted:$FG_GREEN magnet.conf / masternode.conf / wallet.dat$FG_WHITE";
-	echo "Redownloaded the $FG_GREEN bootstrap file.!";
+	echo "Redownloaded the$FG_GREEN bootstrap file!";
 }
 
 # Initializes the datadirectory
