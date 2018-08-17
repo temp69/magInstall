@@ -14,7 +14,7 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 `cd magInstall`\
 `./magInstall.sh`
 
-![magnet menu](https://github.com/temp69/magInstall/releases/download/1/menu.png)
+![magnet menu](https://user-images.githubusercontent.com/36497576/44256329-1c6b4e80-a209-11e8-87bf-cccc7989cee9.png)
 
 ## INFO
 
