@@ -407,6 +407,7 @@ while [[ $REPLY != 0 ]]; do
 	3. START|STOP MAGNET WALLET
 	4. MASTERNODE CONFIG
 	--------------------
+	7. EDIT magnet.conf
 	8. MASTERNODE STATUS
 	9. WALLET STATUS
 	0. Quit
@@ -487,6 +488,8 @@ while [[ $REPLY != 0 ]]; do
 				echo ${FONT_BOLD}${FG_WHITE}"Could not locate $FG_RED$WALLET_DATA_DIR/$WALLET_CONFIG_FILE$FGBG_NORMAL, install the wallet first";
 			fi
 		fi
+		;;
+	7)	nano "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE";
 		;;
 	8)	if [[ $(check_process) -eq 1 ]]; then
                         mag_status_result=$($WALLET_DAEMON masternode status);

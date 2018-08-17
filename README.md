@@ -36,6 +36,11 @@ You can start and stop your magnet wallet.\
 
 Adds the necessary entries to the config file on your VPS
 
+- **EDIT magnet.conf**
+
+Let's you edit the `magnet.conf` file manually\
+Watch out modifieing RPC information while wallet is running!!
+
 - **MASTERNODE STATUS**
 
 Shows information about your masternode status on the VPS
