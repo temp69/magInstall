@@ -395,6 +395,29 @@ function config_masternode() {
 	fi
 }
 
+# Automatic update function
+function self_update() {
+	local SCRIPT=$(readlink -f "$0")
+	local SCRIPTPATH=$(dirname "$SCRIPT")
+	local SCRIPTNAME="$0"
+	local ARGS="$@"
+	local BRANCH="master"
+
+	git fetch
+	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then
+		get_confirmation "New script available, update it? [y/n]"
+		if [ $? -eq 0 ]; then
+                        git pull --force
+			git checkout $BRANCH
+			git pull --force
+			exec "$SCRIPTNAME" "$@"
+			exit 1
+                fi
+	else
+		echo "Script version checked, uptodate!!";
+	fi
+}
+
 # Yes its an infinity loop
 function infinity_loop() {
         while true;
@@ -577,6 +600,7 @@ while [[ $REPLY != 0 ]]; do
 		echo "EXPLORER_URL2: "$EXPLORER_URL2
 		echo "YIIMP_POOL_URL1: "$YIIMP_POOL_URL1
 		echo ""
+		self_update;
                 ;;
 	*)	echo "Invalid entry."
 		;;
