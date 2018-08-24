@@ -9,7 +9,7 @@ your `magnetd` wallet on a linux VPS.
 
 ## Features
 
-- Updates your VPS operation system
+- Updates your VPS operating system
 - Installs all needed libraries
 - Automated wallet installation
 - Wallet upgrade functionality
