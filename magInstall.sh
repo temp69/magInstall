@@ -588,8 +588,7 @@ while [[ $REPLY != 0 ]]; do
 		fi
 		echo ${FG_WHITE};
 		;;
-	0)	self_update;
-		break
+	0)	break
 		;;
         v)      echo "CURRENT_PATH: "$CURRENT_PATH;
                 echo "WALLET_DOWNLOAD_DIR: "$WALLET_DOWNLOAD_DIR
