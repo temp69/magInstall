@@ -23,7 +23,7 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 Keeps your system up-to-date and installs the required packages to start the wallet.\
 You can even do this from time to time to ensure that everything on your VPS stays uptodate.
 ```diff
-- **Use this first on a fresh VPS**
+**Use this first on a fresh VPS**
 ```
 
 - **INSTALL|UPDATE|RESYNC MAGNET**
@@ -43,7 +43,7 @@ You need to provide a valid `masternode genkey`.
 
 - **EDIT magnet.conf**
 
-Let's you edit the `magnet.conf` file manually\
+Let's you edit the `magnet.conf` file manually
 
 - **MASTERNODE STATUS**
 
