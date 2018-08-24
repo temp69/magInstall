@@ -398,10 +398,12 @@ function config_masternode() {
 # Automatic update function
 function self_update() {
 	local SCRIPT=$(readlink -f "$0")
-	local SCRIPTPATH=$(dirname "$SCRIPT")
-	local SCRIPTNAME="$0"
+	local SCRIPTNAME=$(basename "$0")
 	local ARGS="$@"
 	local BRANCH="master"
+
+	echo $SCRIPT;
+	echo $SCRIPTNAME;
 
 	git fetch
 	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then
@@ -410,7 +412,7 @@ function self_update() {
                         git pull --force
 			git checkout $BRANCH
 			git pull --force
-			exec "$SCRIPTNAME" "$@"
+			exec "$SCRIPT" "$@"
 			exit 1
                 fi
 	else
