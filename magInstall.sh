@@ -419,7 +419,7 @@ function self_update() {
 			exit 1
                 fi
 	else
-		echo ${FONT_BOLD}${FG_WHITE};
+		echo -n ${FONT_BOLD}${FG_WHITE};
 		echo "Script version checked, uptodate!!";
 	fi
 }
