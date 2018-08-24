@@ -1,8 +1,31 @@
 # MAGNET
 
-## magnet install/update/config script
+## magInstall
 
-A menu driven bash script to handle the magnet wallet on the VPS.
+> **magInstall** is a menu driven script which can be used to control
+your `magnetd` wallet on a linux VPS.
+
+![magnet menu](https://user-images.githubusercontent.com/36497576/44571713-d884c600-a781-11e8-8fc4-428232e8d206.png)
+
+## Features
+
+- Updates your VPS operation system
+- Installs all needed libraries
+- Automated wallet installation
+- Wallet upgrade functionality
+- Wallet resync functionality
+- Updating addnodes
+- Start / Stop the wallet
+- Masternode configuration
+- Manually editing `magnet.conf`
+- Masternode status info
+- Wallet status info
+- Blockheight information
+- BETA: Script self update function
+
+> A control center for your magnet wallet
+
+## Installation
 
 ### Install git if needed
 `sudo apt-get install git`
@@ -14,16 +37,14 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 `cd magInstall`\
 `./magInstall.sh`
 
-![magnet menu](https://user-images.githubusercontent.com/36497576/44571713-d884c600-a781-11e8-8fc4-428232e8d206.png)
-
-## INFO
+## Useage
 
 - **UPDATE SYSTEM & INSTALL PACKAGES**
 
 Keeps your system up-to-date and installs the required packages to start the wallet.\
 You can even do this from time to time to ensure that everything on your VPS stays uptodate.
 ```diff
-**Use this first on a fresh VPS**
+- **Use this first on a fresh VPS**
 ```
 
 - **INSTALL|UPDATE|RESYNC MAGNET**
@@ -60,6 +81,16 @@ Will give you information of your wallet and the explorers, to check how the syn
 Ends the script
 
 Hint: Use **ENTER** twice to refresh the info in the banner!
+
+## Compatibility
+
+- Ubuntu 16.04
+- Ubuntu 17.04
+- Ubuntu 17.10
+- Ubuntu 18.04
+
+- DigitalOcean
+- Vultr
 
 ## TODO
 
