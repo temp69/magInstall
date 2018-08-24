@@ -405,9 +405,11 @@ function self_update() {
 	echo "Script is in: "$SCRIPT;
 	echo "Scriptname to check: "$SCRIPTNAME;
 	echo "Branch: "$BRANCH;
+	echo ${FGBG_NORMAL}${FG_GREEN};
 
 	git fetch
 	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then
+		echo ${FONT_BOLD}${FG_WHITE};
 		get_confirmation "New script available, update it? [y/n]"
 		if [ $? -eq 0 ]; then
                         git pull --force
@@ -417,6 +419,7 @@ function self_update() {
 			exit 1
                 fi
 	else
+		echo ${FONT_BOLD}${FG_WHITE};
 		echo "Script version checked, uptodate!!";
 	fi
 }
