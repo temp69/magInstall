@@ -29,6 +29,7 @@ declare -r WALLET_BOOTSTRAP_FILE="bootstrap.zip"
 declare -r WALLET_BOOTSTRAP_URL="https://magnetwork.io/Wallets/$WALLET_BOOTSTRAP_FILE"
 declare -r WALLET_CONFIG_FILE="magnet.conf"
 declare -r WALLET_MASTERNODE_FILE="masternode.conf"
+declare -r WALLET_ADDNODES_FILE="https://github.com/temp69/magInstall/releases/download/1/addnodes.txt"
 declare -r EXPLORER_URL1="http://35.202.4.153:3001"
 declare -r EXPLORER_URL2="http://209.250.248.159:3001"
 declare -r YIIMP_POOL_URL1="http://magnetpool.io"
@@ -291,6 +292,23 @@ function fresh_magnet_conf() {
 	EOL
 }
 
+# Updates addnodes
+function update_addnodes() {
+	local NODES=$(wget $WALLET_ADDNODES_FILE -qO -);
+	if [[ "${NODES}" =~ ^addnode=[\d\.]+* ]]; then
+		#echo "$NODES";
+		local FILE=$WALLET_DATA_DIR"/"$WALLET_CONFIG_FILE;
+		# Remove all addnode entries
+		sed -i '/addnode/d' $FILE;
+		# Add all addnode entries
+		cat >> $FILE <<- EOF
+		${NODES}
+		EOF
+		echo ${FONT_BOLD}${FG_WHITE};
+		echo "Updated addnodes in $FG_GREEN$WALLET_CONFIG_FILE$FG_WHITE as well!";
+        fi
+}
+
 # Resyncs the blockchain
 function resync_blockchain() {
 	echo ${FGBG_NORMAL}${FG_GREEN};
@@ -302,6 +320,7 @@ function resync_blockchain() {
 	echo ${FONT_BOLD}${FG_WHITE};
 	echo "All but those files were deleted:$FG_GREEN magnet.conf / masternode.conf / wallet.dat$FG_WHITE";
 	echo "Redownloaded the$FG_GREEN bootstrap file!";
+	update_addnodes;
 }
 
 # Initializes the datadirectory
@@ -321,6 +340,7 @@ function prepare_datadir() {
 	fi
 }
 
+# Asks for masternode privkey to be entered into magnet.conf
 function masternode_entries() {
 	#local NODEIP=$(curl -s4 api.ipify.org)
 	local NODEIP=$(curl -s4 ipinfo.io/ip)
@@ -342,7 +362,7 @@ function masternode_entries() {
 	echo ${FONT_BOLD}${FG_WHITE};
 	get_confirmation "Add those entries to ${FG_GREEN}magnet.conf${FG_WHITE}? [y/n]"
 	if [ $? -eq 0 ]; then
-		# Remove all masternode entries
+		# Remove all old masternode entries
 		sed -i '/masternode/d' $FILE;
 		sed -i '/externalip/d' $FILE;
 		# Add entries
@@ -359,6 +379,7 @@ function masternode_entries() {
 	fi
 }
 
+# Main masternode function
 function config_masternode() {
 	local STRING="masternode=1";
 	local FILE=$WALLET_DATA_DIR"/"$WALLET_CONFIG_FILE;
@@ -402,8 +423,9 @@ while [[ $REPLY != 0 ]]; do
 	echo -n ${FONT_BOLD}${FG_WHITE}
 	cat <<- _EOF_
 
-	1. INSTALL|UPDATE|RESYNC MAGNET
-	2. UPDATE SYSTEM & INSTALL PACKAGES
+	1. UPDATE SYSTEM & INSTALL PACKAGES
+	2. INSTALL|UPDATE|RESYNC MAGNET
+	---------------------------
 	3. START|STOP MAGNET WALLET
 	4. MASTERNODE CONFIG
 	--------------------
@@ -423,7 +445,20 @@ while [[ $REPLY != 0 ]]; do
 
 	# Act on selection
 	case $selection in
-	1)	check_distribution;
+        1)      echo "Updating system"
+                #infinity_loop &
+                #PID=$!
+                # --- do something here ---
+                #kill $PID; trap 'kill $PID' SIGTERM
+                check_distribution;
+                exit_status=$?
+                if [[ "$exit_status" -eq 1 ]]; then
+                        update_ubuntusystem;
+                        install_libraries_ubunutu;
+                        echo -n ${FG_WHITE};
+                fi
+                ;;
+	2)	check_distribution;
 		exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
 			if [[ $(check_process) -eq 1 ]]; then 
@@ -437,19 +472,6 @@ while [[ $REPLY != 0 ]]; do
 				prepare_datadir;
                         fi
 		fi
-		;;
-	2)	echo "Updating system"
-		#infinity_loop &
-		#PID=$!
-		# --- do something here ---
-		#kill $PID; trap 'kill $PID' SIGTERM
-		check_distribution;
-		exit_status=$?
-		if [[ "$exit_status" -eq 1 ]]; then
-                        update_ubuntusystem;
-			install_libraries_ubunutu;
-			echo -n ${FG_WHITE};
-                fi
 		;;
 	3)	if [[ -r "$WALLET_INSTALL_DIR/$WALLET_DAEMON" ]]; then
                         if [[ $(check_process) -eq 1 ]]; then
@@ -489,7 +511,13 @@ while [[ $REPLY != 0 ]]; do
 			fi
 		fi
 		;;
-	7)	nano "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE";
+	7)	if [[ $(check_process) -eq 1 ]]; then
+			echo -n ${FONT_BOLD}${FG_RED};
+			echo "MAGNET daemon is running, stop it before editing magnet.conf file...."
+			echo -n ${FG_WHITE};
+		else
+			nano "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE";
+		fi
 		;;
 	8)	if [[ $(check_process) -eq 1 ]]; then
                         mag_status_result=$($WALLET_DAEMON masternode status);
@@ -544,9 +572,11 @@ while [[ $REPLY != 0 ]]; do
                 echo "WALLET_DOWNLOAD_URL: "$WALLET_DOWNLOAD_URL
                 echo "WALLET_BOOTSTRAP_FILE: "$WALLET_BOOTSTRAP_FILE
                 echo "WALLET_BOOTSTRAP_URL: "$WALLET_BOOTSTRAP_URL
+		echo "WALLET_ADDNODES_FILE: "$WALLET_ADDNODES_FILE
                 echo "EXPLORER_URL1: "$EXPLORER_URL1
 		echo "EXPLORER_URL2: "$EXPLORER_URL2
 		echo "YIIMP_POOL_URL1: "$YIIMP_POOL_URL1
+		echo ""
                 ;;
 	*)	echo "Invalid entry."
 		;;

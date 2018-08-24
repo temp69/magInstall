@@ -18,36 +18,42 @@ A menu driven bash script to handle the magnet wallet on the VPS.
 
 ## INFO
 
-- **INSTALL|UPDATE|RESYNC MAGNET**
-
-This will install / update the magnet wallet or resync your local blockchain.\
-On resync it keeps the necessary files (magnet.conf | masternode.conf | wallet.dat)
-
 - **UPDATE SYSTEM & INSTALL PACKAGES**
 
 Keeps your system up-to-date and installs the required packages to start the wallet.\
-**Use this first on a fresh VPS**
+You can even do this from time to time to ensure that everything on your VPS stays uptodate.
+```diff
+- **Use this first on a fresh VPS**
+```
+
+- **INSTALL|UPDATE|RESYNC MAGNET**
+
+This will install / update the magnet wallet or resync your local blockchain.\
+On resync it keeps the necessary files (magnet.conf | masternode.conf | wallet.dat) on the VPS\
+and will even try to update addnodes.
 
 - **START|STOP MAGNET WALLET**
 
-You can start and stop your magnet wallet.\
+You can start and stop your magnet wallet.
 
 - **MASTERNODE CONFIG**
 
-Adds the necessary entries to the config file on your VPS
+Adds the necessary entries to the config file on your VPS.\
+You need to provide a valid `masternode genkey`.
 
 - **EDIT magnet.conf**
 
 Let's you edit the `magnet.conf` file manually\
-Watch out modifieing RPC information while wallet is running!!
 
 - **MASTERNODE STATUS**
 
-Shows information about your masternode status on the VPS
+Shows information about your masternode status on the VPS\
+`masternode status` and `debug` is executed and shown.
 
 - **WALLET STATUS**
 
-Will give you information of your wallet and the explorers, to check how the sync is going.
+Will give you information of your wallet and the explorers, to check how the sync is going.\
+`getinfo` is executed and it queries explorer's / pool to show block height
 
 - **Quit**
 
@@ -57,5 +63,5 @@ Hint: Use **ENTER** twice to refresh the info in the banner!
 
 ## TODO
 
-- UPDATE ADDNODES WHEN UPDATING WALLET
+- MAKE BLOCK HEIGHT INFO INTERACTIVE???
 - REFACTOR SOME FUNCTIONS
