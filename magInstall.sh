@@ -402,8 +402,9 @@ function self_update() {
 	local ARGS="$@"
 	local BRANCH="master"
 
-	echo $SCRIPT;
-	echo $SCRIPTNAME;
+	echo "Script is in: "$SCRIPT;
+	echo "Scriptname to check: "$SCRIPTNAME;
+	echo "Branch: "$BRANCH;
 
 	git fetch
 	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then

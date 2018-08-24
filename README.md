@@ -63,5 +63,6 @@ Hint: Use **ENTER** twice to refresh the info in the banner!
 
 ## TODO
 
+- SELF UPDATE FUNCTION (beta) use "v" in menu
 - MAKE BLOCK HEIGHT INFO INTERACTIVE???
 - REFACTOR SOME FUNCTIONS
