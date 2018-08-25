@@ -37,7 +37,7 @@ your `magnetd` wallet on a linux VPS.
 `cd magInstall`\
 `./magInstall.sh`
 
-## Useage
+## Usage
 
 - **UPDATE SYSTEM & INSTALL PACKAGES**
 
