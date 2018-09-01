@@ -31,6 +31,7 @@ your `magnetd` wallet on a linux VPS.
 `sudo apt-get install git`
 
 ### Download the install script
+`cd ~`\
 `git clone https://github.com/temp69/magInstall`
 
 ### Move into the directory and execute the script
