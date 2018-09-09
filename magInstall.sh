@@ -78,7 +78,7 @@ function getBlockCountFromPool() {
         local pool_info=0;
         #local url="http://magnetpool.io/api/currencies";
         local url=$1"/api/currencies";
-        pool_info=$(curl -s --connect-timeout 2 "$url");
+        pool_info=$(curl -s --max-time 5 --connect-timeout 2 "$url");
         local pblock_count=$(parse_json "$pool_info" "height");
         echo $pblock_count;
 }
@@ -89,7 +89,7 @@ function getBlockCountFromExplorer() {
 	local blockCount=0;
 	#local url="$EXPLORER_URL/api/getblockcount";
 	local url=$1"/api/getblockcount";
-	blockCount=$(curl -s --connect-timeout 2 "$url")
+	blockCount=$(curl -s --max-time 5 --connect-timeout 2 "$url")
 	echo $blockCount;
 }
 
