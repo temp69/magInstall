@@ -330,6 +330,20 @@ function config_masternode() {
 	fi
 }
 
+# Checks if there is a new version of the script
+function checkForUpdatedScript(){
+	local SCRIPTNAME=$(basename "$0")
+	local BRANCH="master"
+
+	git fetch
+	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then
+		echo ${FONT_BOLD}${FG_WHITE}${BG_BLUE};
+		echo "New magInstall script available press ${FG_RED}<v>${FG_WHITE} in the menu to update!";
+		echo ${FGBG_NORMAL};
+		read -p "Press <ENTER> to continoue"
+	fi
+}
+
 # Automatic update function
 function self_update() {
 	local SCRIPT=$(readlink -f "$0")
@@ -371,6 +385,9 @@ function infinity_loop() {
 ###################################################################
 
 ################### MAIN ENTRY POINT ##############################
+# Check for new script
+clear
+checkForUpdatedScript
 # Save screen
 tput smcup
 
@@ -522,12 +539,13 @@ while [[ $REPLY != 0 ]]; do
         v)      echo "CURRENT_PATH: "$CURRENT_PATH;
                 echo "WALLET_DOWNLOAD_DIR: "$WALLET_DOWNLOAD_DIR
                 echo "WALLET_DAEMON: "$WALLET_DAEMON
+		echo "WALLET_CLI: "$WALLET_CLI
                 echo "WALLET_INSTALL_DIR: "$WALLET_INSTALL_DIR
                 echo "WALLET_DOWNLOAD_FILE: "$WALLET_DOWNLOAD_FILE
                 echo "WALLET_DOWNLOAD_URL: "$WALLET_DOWNLOAD_URL
                 echo "WALLET_BOOTSTRAP_FILE: "$WALLET_BOOTSTRAP_FILE
                 echo "WALLET_BOOTSTRAP_URL: "$WALLET_BOOTSTRAP_URL
-		echo "WALLET_ADDNODES_FILE: "$WALLET_ADDNODES_FILE
+		#echo "WALLET_ADDNODES_FILE: "$WALLET_ADDNODES_FILE
                 echo "EXPLORER_URL1: "$EXPLORER_URL1
 		echo ""
 		self_update;
