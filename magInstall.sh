@@ -281,10 +281,10 @@ function masternode_entries() {
 	local NODEIP=$(curl -s4 ipinfo.io/ip)
 	local MNPRIVKEY="";
 	#while [ -z "${MNPRIVKEY// }" ] && [[ $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; do
-	while [[ ! $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; do
+	while [[ ! $MNPRIVKEY =~ ^5[mn][1-9A-HJ-NP-Za-km-z]{49} ]]; do
 		echo ${FG_GREEN}"Enter your masternode private key:"${FG_WHITE};
 		read MNPRIVKEY;
-		if [[ ! $MNPRIVKEY =~ ^3[npo][1-9A-HJ-NP-Za-km-z]{49} ]]; then
+		if [[ ! $MNPRIVKEY =~ ^5[mn][1-9A-HJ-NP-Za-km-z]{49} ]]; then
 			echo ${FG_WHITE}"Key: "${FG_RED}$MNPRIVKEY${FG_WHITE}" is not valid!"
 		fi
 	done
@@ -308,9 +308,9 @@ function masternode_entries() {
 		masternodeprivkey=$MNPRIVKEY
 		EOF
 		echo ${FONT_BOLD}${FG_GREEN};
-		echo "1) Restart this wallet now, so this configuration takes effect!"
-		echo "2) Configure your coldwallet's masternode.conf file and restart coldwallet"
-		echo "3) Unlock coldwallet and hit [Start]"${FG_WHITE}
+		echo "1) Restart this wallet now, so the configuration takes effect!"
+		echo "2) Configure your controller wallet's masternode.conf file and restart coldwallet"
+		echo "3) Unlock controller wallet and hit [Start]"${FG_WHITE}
 	fi
 }
 
@@ -487,8 +487,8 @@ while [[ $REPLY != 0 ]]; do
 		fi
 		;;
 	8)	if [[ $(check_process) -eq 1 ]]; then
-                        mag_status_result=$($WALLET_CLI masternode status 2>&1 >/dev/null);
-			mag_status_result=$mag_status_result$'\n\n'$($WALLET_CLI masternode debug 2>&1 >/dev/null);
+                        mag_status_result=$($WALLET_CLI masternode status 2>&1);
+			mag_status_result=$mag_status_result$'\n\n'$($WALLET_CLI masternode debug 2>&1);
                         echo -n ${FONT_BOLD}${FG_GREEN};
                         echo "$mag_status_result";
                         echo -n ${FG_WHITE};
