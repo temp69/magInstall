@@ -128,7 +128,19 @@ function check_distribution() {
 function update_ubuntusystem() {
 	sudo apt-get -y update
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install zip unzip curl
 	echo " Done!";
+	if [[ -f /var/run/reboot-required ]]; then
+		get_confirmation "Some updates require a reboot, want todo it? [y/n]"
+		if [ $? -eq 0 ]; then
+			## check for wallet running
+			if [[ $(check_process) -eq 1 ]]; then
+                                 $WALLET_CLI stop;
+                        fi
+			reboot;
+			exit 0;
+		fi
+	fi
 }
 
 # Creates a swap space
