@@ -78,8 +78,26 @@ You can start and stop your magnet wallet.
 Adds the necessary entries to the config file on your VPS.\
 You need to provide a valid `masternode genkey`.
 
-<details><summary> Help </summary></details>
-<br>
+<details><summary> Help </summary><blockquote>
+<details><summary> Controller wallet: masternode genkey </summary><blockquote>
+  - IMAGE
+</blockquote></details>
+<details><summary> VPS: Enter masternode genkey </summary><blockquote>
+  - IMAGE
+</blockquote></details>
+<details><summary> Controller wallet: masternode outputs </summary><blockquote>
+  - IMAGE
+</blockquote></details>
+<details><summary> Controller wallet: masternode.conf </summary><blockquote>
+  - IMAGE
+</blockquote></details>
+<details><summary> Controller wallet: masternode start </summary><blockquote>
+  - IMAGE
+</blockquote></details>
+<details><summary> VPS: Check masternode status </summary><blockquote>
+  - IMAGE
+</blockquote></details> 
+</blockquote></details><br>
 
 - **5. EDIT mag.conf**
 
