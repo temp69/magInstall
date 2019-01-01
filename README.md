@@ -55,9 +55,9 @@ You can even do this from time to time to ensure that everything on your VPS sta
 This will install / update the magnet wallet or resync your local blockchain.\
 On resync it keeps the necessary files (mag.conf | masternode.conf | wallet.dat) on the VPS\
 
-<details><summary> Help </summary><blockquote>
+<details><summary> Info </summary><blockquote>
 <details><summary> Fresh Installation </summary><blockquote>
-  - Create a swap drive if needed<br>
+  - Creates a swap drive if needed<br>
   - Installs latest wallet from magnet github<br>
   - Creates wallet restart crontab job if VPS reboots
 </blockquote></details>
