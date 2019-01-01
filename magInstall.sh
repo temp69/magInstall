@@ -385,6 +385,15 @@ function self_update() {
 	fi
 }
 
+# Adds a job to crontab to restart wallet 
+function magnetAutostartOnReboot() {
+	## find entry in cronttab
+	## no entry found, add it
+	local cronCommand="/usr/local/bin/$WALLET_DAEMON";
+	local cronJob="@reboot $cronCommand";
+	( sudo crontab -l | grep -v -F "$cronCommand" ; echo "$cronJob" ) | ( sudo crontab - )
+}
+
 # Yes its an infinity loop
 function infinity_loop() {
         while true;
@@ -462,6 +471,7 @@ while [[ $REPLY != 0 ]]; do
                                 prepare_swap;
                                 download_wallet_files;
 				prepare_datadir;
+				magnetAutostartOnReboot;
                         fi
 		fi
 		;;
