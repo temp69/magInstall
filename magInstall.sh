@@ -131,13 +131,13 @@ function update_ubuntusystem() {
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install zip unzip curl
 	echo " Done!";
 	if [[ -f /var/run/reboot-required ]]; then
-		get_confirmation "Some updates require a reboot, want todo it? [y/n]"
+		get_confirmation "${FONT_BOLD}${FG_RED}Some updates require a reboot, want todo it? [y/n]${FGBG_NORMAL}"
 		if [ $? -eq 0 ]; then
 			## check for wallet running
 			if [[ $(check_process) -eq 1 ]]; then
                                  $WALLET_CLI stop;
                         fi
-			reboot;
+			sudo reboot;
 			exit 0;
 		fi
 	fi
