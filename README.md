@@ -80,10 +80,10 @@ You need to provide a valid `masternode genkey`.
 
 <details><summary> Help </summary><blockquote>
 <details><summary> Controller wallet: masternode genkey </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeGenkey.gif>
 </blockquote></details>
 <details><summary> VPS: Enter masternode genkey </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/magInstallMasternode.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode outputs </summary><blockquote>
   - IMAGE
