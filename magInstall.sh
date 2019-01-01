@@ -127,8 +127,10 @@ function check_distribution() {
 # Updates the ubunutu system
 function update_ubuntusystem() {
 	sudo apt-get -y update
-	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+	#sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install zip unzip curl pwgen
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 	echo "Done!";
 	if [[ -f /var/run/reboot-required ]]; then
 		get_confirmation "${FONT_BOLD}${FG_RED}Some updates require a reboot, want todo it? [y/n]${FGBG_NORMAL}"
@@ -136,6 +138,7 @@ function update_ubuntusystem() {
 			## check for wallet running
 			if [[ $(check_process) -eq 1 ]]; then
                                  $WALLET_CLI stop;
+				 sleep 2
                         fi
 			sudo reboot;
 			exit 0;
