@@ -21,7 +21,8 @@ your `magnetd` wallet on a linux VPS.
 - Masternode status info
 - Wallet status info
 - Blockheight information
-- BETA: Script self update function
+- Script self update function
+- Restarts wallet on VPS reboot
 
 > A control center for your magnet wallet
 
@@ -45,14 +46,14 @@ your `magnetd` wallet on a linux VPS.
 Keeps your system up-to-date and installs the required packages to start the wallet.\
 You can even do this from time to time to ensure that everything on your VPS stays uptodate.
 ```diff
-- **Use this first on a fresh VPS**
+- ********** Use this first on a fresh VPS *************
+- Also use it from time to time to keep your VPS updated
 ```
 
 - **INSTALL|UPDATE|RESYNC MAGNET**
 
 This will install / update the magnet wallet or resync your local blockchain.\
-On resync it keeps the necessary files (magnet.conf | masternode.conf | wallet.dat) on the VPS\
-and will even try to update addnodes.
+On resync it keeps the necessary files (mag.conf | masternode.conf | wallet.dat) on the VPS\
 
 - **START|STOP MAGNET WALLET**
 
@@ -63,9 +64,9 @@ You can start and stop your magnet wallet.
 Adds the necessary entries to the config file on your VPS.\
 You need to provide a valid `masternode genkey`.
 
-- **EDIT magnet.conf**
+- **EDIT mag.conf**
 
-Let's you edit the `magnet.conf` file manually
+Let's you edit the `mag.conf` file manually
 
 - **MASTERNODE STATUS**
 
@@ -81,7 +82,7 @@ Will give you information of your wallet and the explorers, to check how the syn
 
 Ends the script
 
-Hint: Use **ENTER** twice to refresh the info in the banner!
+Hint: Hit **ENTER** twice in the menu to refresh the info in the banner!
 
 ## Compatibility
 
@@ -95,6 +96,4 @@ Hint: Use **ENTER** twice to refresh the info in the banner!
 
 ## TODO
 
-- SELF UPDATE FUNCTION (beta) use "v" in menu
-- MAKE BLOCK HEIGHT INFO INTERACTIVE???
 - REFACTOR SOME FUNCTIONS
