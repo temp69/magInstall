@@ -41,7 +41,7 @@ your `magnetd` wallet on a linux VPS.
 
 ## Usage
 
-- **UPDATE SYSTEM & INSTALL PACKAGES**
+- **1. UPDATE SYSTEM & INSTALL PACKAGES**
 
 Keeps your system up-to-date and installs the required packages to start the wallet.\
 You can even do this from time to time to ensure that everything on your VPS stays uptodate.
@@ -50,35 +50,35 @@ You can even do this from time to time to ensure that everything on your VPS sta
 - Also use it from time to time to keep your VPS updated
 ```
 
-- **INSTALL|UPDATE|RESYNC MAGNET**
+- **2. INSTALL|UPDATE|RESYNC MAGNET**
 
 This will install / update the magnet wallet or resync your local blockchain.\
 On resync it keeps the necessary files (mag.conf | masternode.conf | wallet.dat) on the VPS\
 
-- **START|STOP MAGNET WALLET**
+- **3. START|STOP MAGNET WALLET**
 
 You can start and stop your magnet wallet.
 
-- **MASTERNODE CONFIG**
+- **4. MASTERNODE CONFIG**
 
 Adds the necessary entries to the config file on your VPS.\
 You need to provide a valid `masternode genkey`.
 
-- **EDIT mag.conf**
+- **5. EDIT mag.conf**
 
 Let's you edit the `mag.conf` file manually
 
-- **MASTERNODE STATUS**
+- **6. MASTERNODE STATUS**
 
 Shows information about your masternode status on the VPS\
 `masternode status` and `debug` is executed and shown.
 
-- **WALLET STATUS**
+- **7. WALLET STATUS**
 
 Will give you information of your wallet and the explorers, to check how the sync is going.\
 `getinfo` is executed and it queries explorer's / pool to show block height
 
-- **Quit**
+- **0. Quit**
 
 Ends the script
 
