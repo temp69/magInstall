@@ -39,7 +39,7 @@ declare -r EXPLORER_URL1="http://95.216.209.225"
 
 #################  HELPER FUNCTIONS ###############################
 # Show a magnet banner
-function show_magnet_banner() {
+function showMagnetBanner() {
 	echo ${FONT_BOLD}${FG_YELLOW}
 	cat <<- _EOF_
 
@@ -56,7 +56,7 @@ function show_magnet_banner() {
 }
 
 # Check if wallet is running
-function check_process() {
+function checkProcess() {
 	local check_command=$(ps ax | grep -v grep | grep $WALLET_DAEMON | wc -l)
 	if [[ $check_command -eq 0 ]]; then
 		echo 0
@@ -67,7 +67,7 @@ function check_process() {
 
 # Parse JSON eg.: getinfo and get value for key
 # parameters $1 = json string / $2 = key
-function parse_json() {
+function parseJson() {
 	local json="$1";
 	local key="$2";
 	local result=$(<<<"$1" awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/\042'$2'\042/){print $(i+1)}}}' | tr -d '"' | sed -e 's/^[[:space:]]*//')
@@ -85,10 +85,10 @@ function getBlockCountFromExplorer() {
 }
 
 # Reports status of magnet wallet
-function magnet_status() {
+function walletStatus() {
 	local result="MAGNET WALLET: ";
-	if [[ $(check_process) -eq 1 ]]; then
-		local current_block=$(parse_json "$($WALLET_CLI getinfo)" "blocks")
+	if [[ $(checkProcess) -eq 1 ]]; then
+		local current_block=$(parseJson "$($WALLET_CLI getinfo)" "blocks")
 		result=$result$FONT_BOLD$FG_GREEN"running...block: $current_block"$FGBG_NORMAL;
 		if [[ $($WALLET_CLI mnsync status 2>/dev/null | grep '\"IsBlockchainSynced\": true') ]]; then
 			result=$result$FONT_BOLD$FG_GREEN" [synchronized]"$FGBG_NORMAL;
@@ -105,7 +105,7 @@ function magnet_status() {
 
 # Checks distribution, returns 1 if we good and has global variables filled with info.
 # Allowed: Ubunutu: 16.04 / 17.04 / 17.10 / 18.04
-function check_distribution() {
+function checkDistribution() {
 	# check for distro
 	if [[ -r /etc/os-release ]]; then
 		. /etc/os-release
@@ -125,7 +125,7 @@ function check_distribution() {
 }
 
 # Updates the ubunutu system
-function update_ubuntusystem() {
+function updateUbuntuSystem() {
 	sudo apt-get -y update
 	#sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
@@ -133,10 +133,10 @@ function update_ubuntusystem() {
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 	echo "Done!";
 	if [[ -f /var/run/reboot-required ]]; then
-		get_confirmation "${FONT_BOLD}${FG_RED}Some updates require a reboot, want todo it? [y/n]${FGBG_NORMAL}"
+		getConfirmation "${FONT_BOLD}${FG_RED}Some updates require a reboot, want todo it? [y/n]${FGBG_NORMAL}"
 		if [ $? -eq 0 ]; then
 			## check for wallet running
-			if [[ $(check_process) -eq 1 ]]; then
+			if [[ $(checkProcess) -eq 1 ]]; then
                                  $WALLET_CLI stop;
 				 sleep 2
                         fi
@@ -147,7 +147,7 @@ function update_ubuntusystem() {
 }
 
 # Creates a swap space
-function prepare_swap() {
+function prepareSwap() {
 	if free | awk '/^Swap:/ {exit !$2}'; then
 		echo "Swap exists"
 	else
@@ -163,7 +163,7 @@ function prepare_swap() {
 }
 
 # call with a prompt string or use a default
-function get_confirmation() {
+function getConfirmation() {
         read -r -p "${1:-Are you sure? [y/N]} " response
         case "$response" in
                 [yY])
@@ -176,7 +176,7 @@ function get_confirmation() {
 }
 
 # Delete everything from the wallet directory and redownload/install wallet.
-function update_wallets() {
+function updateWallets() {
         # if directory exists we delete it first
         if [ -d "$WALLET_DOWNLOAD_DIR" ]; then
                 rm -rfv $WALLET_DOWNLOAD_DIR;
@@ -196,22 +196,22 @@ function update_wallets() {
 }
 
 # Initial or updated download the wallets
-function download_wallet_files() {
+function downloadWalletFiles() {
         if [[ -r "$WALLET_DOWNLOAD_DIR/$WALLET_DOWNLOAD_FILE" ]]; then
                 echo $FONT_BOLD"The wallet download directory already exists $FG_RED$WALLET_DOWNLOAD_DIR$FG_WHITE";
-                get_confirmation "Do you want to reinstall/update the wallet!? [y/n]"
+                getConfirmation "Do you want to reinstall/update the wallet!? [y/n]"
                 if [ $? -eq 0 ]; then
                         echo ${FGBG_NORMAL}${FG_GREEN};
-                        update_wallets;
+                        updateWallets;
                 fi
         else
                 echo ${FGBG_NORMAL}${FG_GREEN};
-                update_wallets;
+                updateWallets;
         fi
 }
 
 # Create a fresh magnet.conf file in datadirectory
-function fresh_magnet_conf() {
+function freshWalletConf() {
 	mkdir -p $WALLET_DATA_DIR
 	cd $WALLET_DATA_DIR
 	wget $WALLET_BOOTSTRAP_URL
@@ -243,7 +243,7 @@ function fresh_magnet_conf() {
 }
 
 # Updates addnodes
-function update_addnodes() {
+function updateAddnodes() {
 	local NODES=$(wget $WALLET_ADDNODES_FILE -qO -);
 	if [[ "${NODES}" =~ ^addnode=[\d\.]+* ]]; then
 		#echo "$NODES";
@@ -260,7 +260,7 @@ function update_addnodes() {
 }
 
 # Resyncs the blockchain
-function resync_blockchain() {
+function resyncBlockchain() {
 	echo ${FGBG_NORMAL}${FG_GREEN};
 	cd $WALLET_DATA_DIR
 	#rm -rfv !("magnet.conf"|"masternode.conf"|"wallet.dat")
@@ -270,28 +270,28 @@ function resync_blockchain() {
 	echo ${FONT_BOLD}${FG_WHITE};
 	echo "All but those files were deleted:$FG_GREEN mag.conf / masternode.conf / wallet.dat$FG_WHITE";
 	echo "Redownloaded the$FG_GREEN bootstrap file!";
-	#update_addnodes;
+	#updateAddnodes;
 }
 
 # Initializes the datadirectory
-function prepare_datadir() {
+function prepareDataDir() {
 	# No datadirectory -> fresh installation needed
 	if [ ! -d "$WALLET_DATA_DIR" ]; then
 		echo ${FG_WHITE}"Fresh Installation";
 		echo ${FGBG_NORMAL}${FG_GREEN};
-		fresh_magnet_conf;
+		freshWalletConf;
 		echo -n ${FONT_BOLD}${FG_WHITE}
 	else
 		echo ${FONT_BOLD}${FG_RED}"There is already a data-directory present"${FG_WHITE};
-		get_confirmation "Do you want to resync the blockchain? [y/n]"
+		getConfirmation "Do you want to resync the blockchain? [y/n]"
 		if [ $? -eq 0 ]; then
-			resync_blockchain;
+			resyncBlockchain;
 		fi
 	fi
 }
 
 # Asks for masternode privkey to be entered into mag.conf
-function masternode_entries() {
+function masternodeEntries() {
 	#local NODEIP=$(curl -s4 api.ipify.org)
 	local NODEIP=$(curl -s4 ipinfo.io/ip)
 	local MNPRIVKEY="";
@@ -310,7 +310,7 @@ function masternode_entries() {
 	echo "masternodeaddr="$MNADDR;
 	echo "masternodeprivkey="$MNPRIVKEY;
 	echo ${FONT_BOLD}${FG_WHITE};
-	get_confirmation "Add those entries to ${FG_GREEN}mag.conf${FG_WHITE}? [y/n]"
+	getConfirmation "Add those entries to ${FG_GREEN}mag.conf${FG_WHITE}? [y/n]"
 	if [ $? -eq 0 ]; then
 		# Remove all old masternode entries
 		sed -i '/masternode/d' $FILE;
@@ -323,25 +323,25 @@ function masternode_entries() {
 		masternodeprivkey=$MNPRIVKEY
 		EOF
 		echo ${FONT_BOLD}${FG_GREEN};
-		echo "1) Restart this wallet now, so the configuration takes effect!"
-		echo "2) Configure your controller wallet's masternode.conf file and restart coldwallet"
+		echo "1) Restart this wallet now, so the masternode configuration takes effect!"
+		echo "2) Configure your controller wallet's masternode.conf file and restart it."
 		echo "3) Unlock controller wallet and hit [Start]"${FG_WHITE}
 	fi
 }
 
 # Main masternode function
-function config_masternode() {
+function configMasternode() {
 	local STRING="masternode=1";
 	local FILE=$WALLET_DATA_DIR"/"$WALLET_CONFIG_FILE;
 	if [ ! -z $(grep "$STRING" "$FILE") ]; then
  		# Masternode entries already found
-		get_confirmation "Masternode entries found, overwrite them? [y/n]"
+		getConfirmation "Masternode entries found, overwrite them? [y/n]"
 		if [ $? -eq 0 ]; then
-			masternode_entries;
+			masternodeEntries;
 		fi
 	else
 		# Fresh masternode entries needed.
-		masternode_entries;
+		masternodeEntries;
 	fi
 }
 
@@ -360,7 +360,7 @@ function checkForUpdatedScript(){
 }
 
 # Automatic update function
-function self_update() {
+function selfUpdate() {
 	local SCRIPT=$(readlink -f "$0")
 	local SCRIPTNAME=$(basename "$0")
 	local ARGS="$@"
@@ -374,7 +374,7 @@ function self_update() {
 	git fetch
 	if [[ -n $(git diff --name-only origin/$BRANCH | grep $SCRIPTNAME) ]]; then
 		echo ${FONT_BOLD}${FG_WHITE};
-		get_confirmation "New script available, update it? [y/n]"
+		getConfirmation "New script available, update it? [y/n]"
 		if [ $? -eq 0 ]; then
                         git pull --force
 			git checkout $BRANCH
@@ -398,7 +398,7 @@ function magnetAutostartOnReboot() {
 }
 
 # Yes its an infinity loop
-function infinity_loop() {
+function infinityLoop() {
         while true;
         do
                 echo -n .;
@@ -423,14 +423,14 @@ tput smcup
 # Display menu until selection == 0
 while [[ $REPLY != 0 ]]; do
 	clear
-	show_magnet_banner
-	magnet_status
+	showMagnetBanner
+	walletStatus
 	echo -n ${FONT_BOLD}${FG_WHITE}
 	cat <<- _EOF_
 
-	1. UPDATE SYSTEM
+	1. UPDATE SYSTEM & INSTALL PACKAGES
 	2. INSTALL|UPDATE|RESYNC MAGNET
-	---------------------------
+	-------------------------------
 	3. START|STOP MAGNET WALLET
 	4. MASTERNODE CONFIG
 	--------------------
@@ -451,35 +451,35 @@ while [[ $REPLY != 0 ]]; do
 	# Act on selection
 	case $selection in
         1)      echo "Updating system"
-                #infinity_loop &
+                #infinityLoop &
                 #PID=$!
                 # --- do something here ---
                 #kill $PID; trap 'kill $PID' SIGTERM
-                check_distribution;
+                checkDistribution;
                 exit_status=$?
                 if [[ "$exit_status" -eq 1 ]]; then
-                        update_ubuntusystem;
+                        updateUbuntuSystem;
                         echo -n ${FG_WHITE};
                 fi
                 ;;
-	2)	check_distribution;
+	2)	checkDistribution;
 		exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
-			if [[ $(check_process) -eq 1 ]]; then 
+			if [[ $(checkProcess) -eq 1 ]]; then 
                                 echo -n ${FONT_BOLD}${FG_RED};
                                 echo "MAGNET daemon is running, stop it before updating...."
                                 echo -n ${FG_WHITE};
                         else
                                 echo "INSTALLING";
-                                prepare_swap;
-                                download_wallet_files;
-				prepare_datadir;
+                                prepareSwap;
+                                downloadWalletFiles;
+				prepareDataDir;
 				magnetAutostartOnReboot;
                         fi
 		fi
 		;;
 	3)	if [[ -r "$WALLET_INSTALL_DIR/$WALLET_DAEMON" ]]; then
-                        if [[ $(check_process) -eq 1 ]]; then
+                        if [[ $(checkProcess) -eq 1 ]]; then
                                 echo -n ${FONT_BOLD}${FG_RED};
                                 $WALLET_CLI stop;
                                 sleep 1;
@@ -503,7 +503,7 @@ while [[ $REPLY != 0 ]]; do
 			# TBD -> check if wallet is running regardless, from old setup instructions and ask if we should kill it with fire
                 fi
 		;;
-	4)	check_distribution;
+	4)	checkDistribution;
                 exit_status=$?
 		if [[ "$exit_status" -eq 1 ]]; then
 			if [[ -r "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE" ]]; then
@@ -511,16 +511,16 @@ while [[ $REPLY != 0 ]]; do
 				echo "Its suggested to proceed only after your wallet's blockchain";
 				echo "is fully synchronized. You can check with option (9)";
 				echo -n ${FG_WHITE};
-				get_confirmation "Do you want to proceed? [y/n]"
+				getConfirmation "Do you want to proceed? [y/n]"
 				if [ $? -eq 0 ]; then
-					config_masternode;
+					configMasternode;
 				fi
 			else
 				echo ${FONT_BOLD}${FG_WHITE}"Could not locate $FG_RED$WALLET_DATA_DIR/$WALLET_CONFIG_FILE$FGBG_NORMAL, install the wallet first";
 			fi
 		fi
 		;;
-	7)	if [[ $(check_process) -eq 1 ]]; then
+	7)	if [[ $(checkProcess) -eq 1 ]]; then
 			echo -n ${FONT_BOLD}${FG_RED};
 			echo "MAGNET daemon is running, stop it before editing mag.conf file...."
 			echo -n ${FG_WHITE};
@@ -528,7 +528,7 @@ while [[ $REPLY != 0 ]]; do
 			nano "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE";
 		fi
 		;;
-	8)	if [[ $(check_process) -eq 1 ]]; then
+	8)	if [[ $(checkProcess) -eq 1 ]]; then
                         mag_status_result=$($WALLET_CLI masternode status 2>&1);
 			mag_status_result=$mag_status_result$'\n\n'$($WALLET_CLI masternode debug 2>&1);
                         echo -n ${FONT_BOLD}${FG_GREEN};
@@ -540,7 +540,7 @@ while [[ $REPLY != 0 ]]; do
                         echo -n ${FG_WHITE};
                 fi
 		;;
-	9)	if [[ $(check_process) -eq 1 ]]; then
+	9)	if [[ $(checkProcess) -eq 1 ]]; then
 			mag_status_result=$($WALLET_CLI getinfo);
 			echo -n ${FONT_BOLD}${FG_GREEN};
 			echo "$mag_status_result";
@@ -573,7 +573,7 @@ while [[ $REPLY != 0 ]]; do
 		#echo "WALLET_ADDNODES_FILE: "$WALLET_ADDNODES_FILE
                 echo "EXPLORER_URL1: "$EXPLORER_URL1
 		echo ""
-		self_update;
+		selfUpdate;
                 ;;
 	*)	echo "Invalid entry."
 		;;
