@@ -123,6 +123,8 @@ Ends the script
 
 ## Compatibility
 
+Recommended is a VPS with 1GB RAM / 1 vCPU / 20+ GB HDD
+
 - Ubuntu 16.04
 - Ubuntu 17.04
 - Ubuntu 17.10
