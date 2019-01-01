@@ -290,7 +290,7 @@ function prepare_datadir() {
 	fi
 }
 
-# Asks for masternode privkey to be entered into magnet.conf
+# Asks for masternode privkey to be entered into mag.conf
 function masternode_entries() {
 	#local NODEIP=$(curl -s4 api.ipify.org)
 	local NODEIP=$(curl -s4 ipinfo.io/ip)
@@ -310,7 +310,7 @@ function masternode_entries() {
 	echo "masternodeaddr="$MNADDR;
 	echo "masternodeprivkey="$MNPRIVKEY;
 	echo ${FONT_BOLD}${FG_WHITE};
-	get_confirmation "Add those entries to ${FG_GREEN}magnet.conf${FG_WHITE}? [y/n]"
+	get_confirmation "Add those entries to ${FG_GREEN}mag.conf${FG_WHITE}? [y/n]"
 	if [ $? -eq 0 ]; then
 		# Remove all old masternode entries
 		sed -i '/masternode/d' $FILE;
@@ -522,7 +522,7 @@ while [[ $REPLY != 0 ]]; do
 		;;
 	7)	if [[ $(check_process) -eq 1 ]]; then
 			echo -n ${FONT_BOLD}${FG_RED};
-			echo "MAGNET daemon is running, stop it before editing magnet.conf file...."
+			echo "MAGNET daemon is running, stop it before editing mag.conf file...."
 			echo -n ${FG_WHITE};
 		else
 			nano "$WALLET_DATA_DIR/$WALLET_CONFIG_FILE";
