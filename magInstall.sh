@@ -128,8 +128,8 @@ function check_distribution() {
 function update_ubuntusystem() {
 	sudo apt-get -y update
 	sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
-	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install zip unzip curl
-	echo " Done!";
+	sudo DEBIAN_FRONTEND=noninteractive apt-get -y install zip unzip curl pwgen
+	echo "Done!";
 	if [[ -f /var/run/reboot-required ]]; then
 		get_confirmation "${FONT_BOLD}${FG_RED}Some updates require a reboot, want todo it? [y/n]${FGBG_NORMAL}"
 		if [ $? -eq 0 ]; then
