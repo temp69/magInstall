@@ -86,16 +86,16 @@ You need to provide a valid `masternode genkey`.
   <img src=https://github.com/temp69/magInstall/blob/master/images/magInstallMasternode.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode outputs </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeOutputs.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode.conf </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeConf.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode start </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeStart.gif>
 </blockquote></details>
 <details><summary> VPS: Check masternode status </summary><blockquote>
-  - IMAGE
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeVPScheck.gif>
 </blockquote></details> 
 </blockquote></details><br>
 
