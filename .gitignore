@@ -2,6 +2,7 @@
 /*
 
 # Whitelist some files
+!images
 !.gitignore
 !README.md
 !magInstall.sh
