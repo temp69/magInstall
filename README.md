@@ -134,3 +134,5 @@ Ends the script
 ## TODO
 
 - REFACTOR SOME FUNCTIONS
+
+If you like this guide(s) drop me some MAGNET, use the [Litemint](https://litemint.com/) wallet and send to **TEmp\*litemint.com**
