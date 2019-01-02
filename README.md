@@ -97,6 +97,7 @@ You need to provide a valid `masternode genkey`.
   <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeOutputs.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode.conf </summary><blockquote>
+  <i>Remember to restart the wallet after your configured the <b>masternode.conf</b> file</i>
   <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeConf.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode start </summary><blockquote>
