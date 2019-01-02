@@ -5,7 +5,7 @@
 > **magInstall** is a menu driven script which can be used to control
 your `magnetd` wallet on a linux VPS.
 
-![magnet menu](https://user-images.githubusercontent.com/36497576/44571713-d884c600-a781-11e8-8fc4-428232e8d206.png)
+![maginstallmenu](https://user-images.githubusercontent.com/36497576/50610659-10400f00-0ed4-11e9-8cca-54c9d2a8e070.png)
 
 ## Features
 
