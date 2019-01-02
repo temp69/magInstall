@@ -88,23 +88,23 @@ You need to provide a valid `masternode genkey`.
 
 <details><summary> Help </summary><blockquote>
 <details><summary> Controller wallet: masternode genkey </summary><blockquote>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/masternodeGenkey.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeGenkey.gif>
 </blockquote></details>
 <details><summary> VPS: Enter masternode genkey </summary><blockquote>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/magInstallMasternode.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/magInstallMasternode.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode outputs </summary><blockquote>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/masternodeOutputs.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeOutputs.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode.conf </summary><blockquote>
   <i>Remember to restart the wallet after your configured the <b>masternode.conf</b> file</i>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/masternodeConf.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeConf.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode start </summary><blockquote>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/masternodeStart.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeStart.gif>
 </blockquote></details>
 <details><summary> VPS: Check masternode status </summary><blockquote>
-  <img src=https://github.com/temp69/magInstall/releases/download/v1.0.0/masternodeVPScheck.gif>
+  <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeVPScheck.gif>
 </blockquote></details> 
 </blockquote></details><br>
 
