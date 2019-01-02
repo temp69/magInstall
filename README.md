@@ -101,6 +101,7 @@ You need to provide a valid `masternode genkey`.
   <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeConf.gif>
 </blockquote></details>
 <details><summary> Controller wallet: masternode start </summary><blockquote>
+  <i>Ensure the wallet is fully synchronized and the transaction has 15 confirmations before starting the node</i>
   <img src=https://github.com/temp69/magInstall/blob/master/images/masternodeStart.gif>
 </blockquote></details>
 <details><summary> VPS: Check masternode status </summary><blockquote>
