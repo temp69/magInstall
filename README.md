@@ -1,5 +1,13 @@
 # MAGNET
 
+## Table of Contents
+1. [magInstall](#maginstall)
+1. [Features](#features)
+1. [Installation](#installation)
+1. [Usage](#usage)
+1. [Compatibility](#compatibility)
+1. [TODO](#todo)
+
 ## magInstall
 
 > **magInstall** is a menu driven script which can be used to control
