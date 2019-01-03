@@ -60,7 +60,7 @@ You can even do this from time to time to ensure that everything on your VPS sta
 - **2. INSTALL|UPDATE|RESYNC MAGNET**
 
 This will install / update the magnet wallet or resync your local blockchain.\
-On resync it keeps the necessary files (mag.conf | masternode.conf | wallet.dat) on the VPS\
+On resync it keeps the necessary files (mag.conf | masternode.conf | wallet.dat) on the VPS
 
 <details><summary> Info </summary><blockquote>
 <details><summary> Fresh Installation </summary><blockquote>
@@ -110,7 +110,7 @@ You need to provide a valid `masternode genkey`.
 
 - **5. EDIT mag.conf**
 
-Let's you edit the `mag.conf` file manually
+Let's you edit the `mag.conf` file manually, with nano editor
 
 - **6. MASTERNODE STATUS**
 
