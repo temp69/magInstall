@@ -395,7 +395,8 @@ function magnetAutostartOnReboot() {
 	## no entry found, add it
 	local cronCommand="/usr/local/bin/$WALLET_DAEMON";
 	local cronJob="@reboot $cronCommand";
-	( sudo crontab -l | grep -v -F "$cronCommand" ; echo "$cronJob" ) | ( sudo crontab - )
+	## removed sudo, in case we have non-root user logged in
+	( crontab -l | grep -v -F "$cronCommand" ; echo "$cronJob" ) | ( crontab - )
 }
 
 # Yes its an infinity loop
