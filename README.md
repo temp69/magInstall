@@ -135,9 +135,8 @@ Ends the script
 Recommended is a VPS with 1GB RAM / 1 vCPU / 20+ GB HDD
 
 - Ubuntu 16.04
-- Ubuntu 17.04
-- Ubuntu 17.10
-- Ubuntu 18.04
+- Ubuntu 17.04 / 17.10
+- Ubuntu 18.04 / 18.10
 
 ## TODO
 
