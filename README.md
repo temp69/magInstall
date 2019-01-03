@@ -1,19 +1,18 @@
 # MAGNET
 
+## magInstall
+
+> **magInstall** is a menu driven script which can be used to control
+your `magnet` wallet on a linux VPS.
+
+![maginstallmenu](https://user-images.githubusercontent.com/36497576/50610659-10400f00-0ed4-11e9-8cca-54c9d2a8e070.png)
+
 ## Table of Contents
 1. [magInstall](#maginstall)
 1. [Features](#features)
 1. [Installation](#installation)
 1. [Usage](#usage)
 1. [Compatibility](#compatibility)
-1. [TODO](#todo)
-
-## magInstall
-
-> **magInstall** is a menu driven script which can be used to control
-your `magnetd` wallet on a linux VPS.
-
-![maginstallmenu](https://user-images.githubusercontent.com/36497576/50610659-10400f00-0ed4-11e9-8cca-54c9d2a8e070.png)
 
 ## Features
 
@@ -139,9 +138,6 @@ Recommended is a VPS with 1GB RAM / 1 vCPU / 20+ GB HDD
 - Ubuntu 17.04
 - Ubuntu 17.10
 - Ubuntu 18.04
-
-- DigitalOcean
-- Vultr
 
 ## TODO
 
