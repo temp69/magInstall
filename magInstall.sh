@@ -115,7 +115,7 @@ function checkDistribution() {
 		fi
 		if [[ "${VERSION_ID}" != "16.04" ]] && [[ "${VERSION_ID}" != "17.04" ]] && \
 		   [[ "${VERSION_ID}" != "17.10" ]] && [[ "${VERSION_ID}" != "18.04" ]] && \
-		   [[ "${VERSION_ID}" != "18.10" ]]; then
+		   [[ "${VERSION_ID}" != "18.10" ]] && [[ "${VERSION_ID}" != "19.04" ]]; then
 			echo "$NAME $VERSION_ID is not supported!";
 			return 0;
 		else
